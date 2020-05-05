@@ -14,7 +14,7 @@ import 'feedback.dart';
 export 'package:flutter/services.dart'
     show TextInputType, TextInputAction, TextCapitalization;
 
-const Color _borderColor = CupertinoDynamicColor.withBrightness(
+const Color _borderColor = DynamicColor.withBrightness(
   color: Color(0x33000000),
   darkColor: Color(0x33FFFFFF),
 );
@@ -32,30 +32,29 @@ const Border _kDefaultRoundedBorder = Border(
 );
 
 final Border _kDefaultRoundedBorderError = Border(
-  top: _kDefaultRoundedBorderSide.copyWith(color: CupertinoColors.systemRed),
-  bottom: _kDefaultRoundedBorderSide.copyWith(color: CupertinoColors.systemRed),
-  left: _kDefaultRoundedBorderSide.copyWith(color: CupertinoColors.systemRed),
-  right: _kDefaultRoundedBorderSide.copyWith(color: CupertinoColors.systemRed),
+  top: _kDefaultRoundedBorderSide.copyWith(color: Colors.systemRed),
+  bottom: _kDefaultRoundedBorderSide.copyWith(color: Colors.systemRed),
+  left: _kDefaultRoundedBorderSide.copyWith(color: Colors.systemRed),
+  right: _kDefaultRoundedBorderSide.copyWith(color: Colors.systemRed),
 );
 
 const BoxDecoration cupertinoRoundedBorderDecoration = BoxDecoration(
-  color: CupertinoColors.textfieldBackground,
+  color: Colors.textfieldBackground,
   border: _kDefaultRoundedBorder,
   borderRadius: BorderRadius.all(Radius.circular(7.0)),
 );
 
-const Color _kDisabledBackground = CupertinoDynamicColor.withBrightness(
+const Color _kDisabledBackground = DynamicColor.withBrightness(
   color: Color(0xFFFAFAFA),
   darkColor: Color(0xFF050505),
 );
 
-const CupertinoDynamicColor _kClearButtonColor =
-    CupertinoDynamicColor.withBrightness(
+const DynamicColor _kClearButtonColor =
+    DynamicColor.withBrightness(
   color: Color(0xFF636366),
   darkColor: Color(0xFFAEAEB2),
 );
 
-const int _iOSHorizontalCursorOffsetPixels = -2;
 const int _iOSHorizontalOffset = -2;
 
 enum OverlayVisibilityMode {
@@ -143,7 +142,7 @@ class CupertinoTextField extends StatefulWidget {
     this.placeholder,
     this.placeholderStyle = const TextStyle(
       fontWeight: FontWeight.w400,
-      color: CupertinoColors.placeholderText,
+      color: Colors.placeholderText,
     ),
     this.prefix,
     this.prefixMode = OverlayVisibilityMode.always,
@@ -559,7 +558,7 @@ class _CupertinoTextFieldState extends State<CupertinoTextField>
                 child: Icon(
                   CupertinoIcons.clear_thick_circled,
                   size: 18.0,
-                  color: CupertinoDynamicColor.resolve(
+                  color: DynamicColor.resolve(
                       _kClearButtonColor, context),
                 ),
               ),
@@ -602,9 +601,9 @@ class _CupertinoTextFieldState extends State<CupertinoTextField>
     final CupertinoThemeData themeData = CupertinoTheme.of(context);
 
     final TextStyle resolvedStyle = widget.style?.copyWith(
-      color: CupertinoDynamicColor.resolve(widget.style?.color, context),
+      color: DynamicColor.resolve(widget.style?.color, context),
       backgroundColor:
-          CupertinoDynamicColor.resolve(widget.style?.backgroundColor, context),
+          DynamicColor.resolve(widget.style?.backgroundColor, context),
     );
 
     final TextStyle textStyle =
@@ -612,9 +611,9 @@ class _CupertinoTextFieldState extends State<CupertinoTextField>
 
     final TextStyle resolvedPlaceholderStyle =
         widget.placeholderStyle?.copyWith(
-      color: CupertinoDynamicColor.resolve(
+      color: DynamicColor.resolve(
           widget.placeholderStyle?.color, context),
-      backgroundColor: CupertinoDynamicColor.resolve(
+      backgroundColor: DynamicColor.resolve(
           widget.placeholderStyle?.backgroundColor, context),
     );
 
@@ -624,13 +623,13 @@ class _CupertinoTextFieldState extends State<CupertinoTextField>
     final Brightness keyboardAppearance =
         widget.keyboardAppearance ?? themeData.brightness;
     final Color cursorColor =
-        CupertinoDynamicColor.resolve(widget.cursorColor, context) ??
+        DynamicColor.resolve(widget.cursorColor, context) ??
             themeData.primaryColor;
     final Color disabledColor =
-        CupertinoDynamicColor.resolve(_kDisabledBackground, context);
+        DynamicColor.resolve(_kDisabledBackground, context);
 
     final Color decorationColor =
-        CupertinoDynamicColor.resolve(widget.decoration?.color, context);
+        DynamicColor.resolve(widget.decoration?.color, context);
 
     final BoxBorder border = widget.decoration?.border;
     Border resolvedBorder = border;
@@ -639,7 +638,7 @@ class _CupertinoTextFieldState extends State<CupertinoTextField>
         return side == BorderSide.none
             ? side
             : side.copyWith(
-                color: CupertinoDynamicColor.resolve(side.color, context));
+                color: DynamicColor.resolve(side.color, context));
       }
 
       resolvedBorder = border == null || border.runtimeType != Border
@@ -696,8 +695,8 @@ class _CupertinoTextFieldState extends State<CupertinoTextField>
           cursorOpacityAnimates: cursorOpacityAnimates,
           cursorOffset: cursorOffset,
           paintCursorAboveText: paintCursorAboveText,
-          backgroundCursorColor: CupertinoDynamicColor.resolve(
-              CupertinoColors.inactiveGray, context),
+          backgroundCursorColor: DynamicColor.resolve(
+              Colors.inactiveGray, context),
           scrollPadding: widget.scrollPadding,
           keyboardAppearance: keyboardAppearance,
           dragStartBehavior: widget.dragStartBehavior,
@@ -790,7 +789,7 @@ class CupertinoTextFormField extends FormField<String> {
     DragStartBehavior dragStartBehavior = DragStartBehavior.start,
     TextStyle placeholderStyle = const TextStyle(
       fontWeight: FontWeight.w400,
-      color: CupertinoColors.placeholderText,
+      color: Colors.placeholderText,
     ),
     ScrollController scrollController,
     ScrollPhysics scrollPhysics,
@@ -899,8 +898,8 @@ class CupertinoTextFormField extends FormField<String> {
                     child: Text(
                       field.errorText,
                       style: theme.textTheme.formFooterTextStyle.copyWith(
-                          color: CupertinoDynamicColor.resolve(
-                              CupertinoColors.errorRed, field.context),
+                          color: DynamicColor.resolve(
+                              Colors.errorRed, field.context),
                           height: 1),
                     ),
                   ),

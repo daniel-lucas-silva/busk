@@ -31,6 +31,7 @@ export 'src/tooltip.dart';
 export 'package:flutter/widgets.dart';
 export 'package:flutter/services.dart';
 export 'package:flutter/gestures.dart';
+export 'package:intl/intl.dart' hide TextDirection;
 
 export 'src/link.dart';
 export 'src/themes.dart';

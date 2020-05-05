@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io' show Platform;
-import 'dart:ui' show ImageFilter;
-
 import 'package:flutter/widgets.dart';
 
 import '../theme/colors.dart';
@@ -12,16 +9,44 @@ import '../theme/theme.dart';
 
 const double _kTabBarHeight = 50.0;
 
-const Color _kDefaultTabBarBorderColor = CupertinoDynamicColor.withBrightness(
+const Color _kDefaultTabBarBorderColor = DynamicColor.withBrightness(
   color: Color(0x4C000000),
   darkColor: Color(0x29000000),
 );
 
-const Color _kDefaultTabBarInactiveColor = CupertinoColors.inactiveGray;
+const Color _kDefaultTabBarInactiveColor = Colors.inactiveGray;
 
-class CupertinoTabBar extends StatelessWidget implements PreferredSizeWidget {
+
+class TabBarItem {
+  const TabBarItem({
+    @required this.icon,
+    this.title,
+    Widget activeIcon,
+  }) : activeIcon = activeIcon ?? icon,
+        assert(icon != null);
+  final Widget icon;
+  final Widget activeIcon;
+  final Widget title;
+}
+
+class TabItem {
+  const TabItem({
+    @required this.icon,
+    this.title,
+    this.child,
+    Widget activeIcon,
+  }) : activeIcon = activeIcon ?? icon,
+        assert(icon != null),
+        assert(child != null);
+  final IconData icon;
+  final IconData activeIcon;
+  final String title;
+  final Widget child;
+}
+
+class TabBar extends StatelessWidget implements PreferredSizeWidget {
   /// Creates a tab bar in the iOS style.
-  const CupertinoTabBar({
+  const TabBar({
     Key key,
     @required this.items,
     this.onTap,
@@ -48,7 +73,7 @@ class CupertinoTabBar extends StatelessWidget implements PreferredSizeWidget {
        assert(inactiveColor != null),
        super(key: key);
 
-  final List<BottomNavigationBarItem> items;
+  final List<TabBarItem> items;
   final ValueChanged<int> onTap;
   final int currentIndex;
   final Color backgroundColor;
@@ -68,7 +93,7 @@ class CupertinoTabBar extends StatelessWidget implements PreferredSizeWidget {
     BorderSide resolveBorderSide(BorderSide side) {
       return side == BorderSide.none
         ? side
-        : side.copyWith(color: CupertinoDynamicColor.resolve(side.color, context));
+        : side.copyWith(color: DynamicColor.resolve(side.color, context));
     }
 
     final Border resolvedBorder = border == null || border.runtimeType != Border
@@ -80,7 +105,7 @@ class CupertinoTabBar extends StatelessWidget implements PreferredSizeWidget {
         right: resolveBorderSide(border.right),
       );
 
-    final Color inactive = CupertinoDynamicColor.resolve(inactiveColor, context);
+    final Color inactive = DynamicColor.resolve(inactiveColor, context);
 
     Widget result = DecoratedBox(
       decoration: BoxDecoration(
@@ -143,7 +168,7 @@ class CupertinoTabBar extends StatelessWidget implements PreferredSizeWidget {
     return result;
   }
 
-  List<Widget> _buildSingleTabItem(BottomNavigationBarItem item, bool active) {
+  List<Widget> _buildSingleTabItem(TabBarItem item, bool active) {
     return <Widget>[
       Expanded(
         child: Center(child: active ? item.activeIcon : item.icon),
@@ -157,7 +182,7 @@ class CupertinoTabBar extends StatelessWidget implements PreferredSizeWidget {
     if (!active)
       return item;
 
-    final Color activeColor = CupertinoDynamicColor.resolve(
+    final Color activeColor = DynamicColor.resolve(
       this.activeColor ?? CupertinoTheme.of(context).primaryColor,
       context,
     );
@@ -170,11 +195,11 @@ class CupertinoTabBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  /// Create a clone of the current [CupertinoTabBar] but with provided
+  /// Create a clone of the current [TabBar] but with provided
   /// parameters overridden.
-  CupertinoTabBar copyWith({
+  TabBar copyWith({
     Key key,
-    List<BottomNavigationBarItem> items,
+    List<TabBarItem> items,
     Color backgroundColor,
     Color activeColor,
     Color inactiveColor,
@@ -183,7 +208,7 @@ class CupertinoTabBar extends StatelessWidget implements PreferredSizeWidget {
     int currentIndex,
     ValueChanged<int> onTap,
   }) {
-    return CupertinoTabBar(
+    return TabBar(
       key: key ?? this.key,
       items: items ?? this.items,
       backgroundColor: backgroundColor ?? this.backgroundColor,

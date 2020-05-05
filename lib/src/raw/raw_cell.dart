@@ -1,6 +1,790 @@
-part of 'cell.dart';
+import 'dart:async';
+import 'dart:math' as math;
 
+import 'package:busk/src/raw/raw_section.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/material.dart' show Icons;
+import 'package:flutter/widgets.dart';
 
+import '../feedback.dart';
+import '../icons.dart';
+import '../utils/extensions.dart';
+import '../rating_bar.dart';
+import '../theme/colors.dart';
+import '../theme/theme.dart';
+
+export 'package:flutter/services.dart'
+    show
+        TextInputType,
+        TextInputAction,
+        TextCapitalization,
+        SmartQuotesType,
+        SmartDashesType;
+
+enum CellType {
+  DEFAULT,
+  SUBTITLE,
+  MESSAGE,
+  MAIL,
+  VOUCHER,
+  ACTION,
+  PROFILE,
+  DETAIL,
+  PRODUCT,
+  FIELD,
+  REVIEW,
+}
+
+class Cell extends RawCell {
+  const Cell._({
+    Key key,
+    @required Widget title,
+    @required Widget subtitle,
+    @required Widget text,
+    @required Widget after,
+    @required Widget leading,
+    @required Widget trailing,
+    @required VoidCallback onTap,
+    @required VoidCallback onLongPress,
+    @required CellType type,
+    @required EdgeInsets padding,
+    @required bool enabled,
+    @required bool checked,
+    @required bool disclosure,
+  }) : super(
+          key: key,
+          title: title,
+          subtitle: subtitle,
+          text: text,
+          after: after,
+          leading: leading,
+          trailing: trailing,
+          onTap: onTap,
+          onLongPress: onLongPress,
+          type: type,
+          padding: padding,
+          enabled: enabled,
+          checked: checked,
+          disclosure: disclosure,
+        );
+
+  factory Cell({
+    Key key,
+    @required Widget child,
+    Widget leading,
+    Widget trailing,
+    Widget detail,
+    VoidCallback onTap,
+    VoidCallback onLongPress,
+    EdgeInsets padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    bool enabled: true,
+    bool checked,
+    bool disclosure,
+  }) =>
+      Cell._(
+        key: key,
+        title: child,
+        subtitle: null,
+        text: null,
+        after: detail,
+        leading: leading,
+        trailing: trailing,
+        type: CellType.DEFAULT,
+        onTap: onTap,
+        onLongPress: onLongPress,
+        padding: padding,
+        enabled: enabled,
+        checked: checked,
+        disclosure: disclosure,
+      );
+
+  factory Cell.subtitle({
+    Key key,
+    @required Widget title,
+    @required Widget subtitle,
+    Widget detail,
+    Widget leading,
+    Widget trailing,
+    VoidCallback onTap,
+    VoidCallback onLongPress,
+    EdgeInsets padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    bool enabled: true,
+    bool checked,
+    bool disclosure,
+  }) =>
+      Cell._(
+        key: key,
+        title: title,
+        subtitle: subtitle,
+        text: null,
+        after: detail,
+        leading: leading,
+        trailing: trailing,
+        type: CellType.SUBTITLE,
+        onTap: onTap,
+        onLongPress: onLongPress,
+        padding: padding,
+        enabled: enabled,
+        checked: checked,
+        disclosure: disclosure,
+      );
+
+  factory Cell.field({
+    Key key,
+    @required Widget title,
+    String error,
+    Widget detail,
+    Widget leading,
+    Widget trailing,
+    VoidCallback onTap,
+    VoidCallback onLongPress,
+    EdgeInsets padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    bool enabled: true,
+    bool checked,
+    bool disclosure,
+  }) =>
+      Cell._(
+        key: key,
+        title: title,
+        subtitle: error.toText(null, _kErrorStyle),
+        text: null,
+        after: detail,
+        leading: leading,
+        trailing: trailing,
+        type: CellType.FIELD,
+        onTap: onTap,
+        onLongPress: onLongPress,
+        padding: padding,
+        enabled: enabled,
+        checked: false,
+        disclosure: disclosure,
+      );
+
+  factory Cell.message({
+    Key key,
+    @required String from,
+    @required String message,
+    @required String time,
+    @required Widget avatar,
+    @required bool read,
+    VoidCallback onTap,
+    VoidCallback onLongPress,
+    bool enabled: true,
+  }) =>
+      Cell._(
+        key: key,
+        title: Text(from, maxLines: 1),
+        subtitle: Text(message, maxLines: 2),
+        text: null,
+        after: Text(time, maxLines: 1),
+        leading: avatar,
+        trailing: null,
+        type: CellType.MESSAGE,
+        onTap: onTap,
+        onLongPress: onLongPress,
+        padding: const EdgeInsets.symmetric(horizontal: 7.0),
+        enabled: enabled,
+        checked: false,
+        disclosure: true,
+      );
+
+  factory Cell.mail({
+    Key key,
+    @required String from,
+    @required String subject,
+    @required String message,
+    @required String time,
+    @required bool read,
+    VoidCallback onTap,
+    VoidCallback onLongPress,
+    bool enabled: true,
+  }) =>
+      Cell._(
+        key: key,
+        title: Text(from, maxLines: 1),
+        subtitle: Text(subject, maxLines: 1),
+        text: Text(message, maxLines: 2),
+        after: Text(time, maxLines: 1),
+        leading: null,
+        trailing: null,
+        type: CellType.MAIL,
+        onTap: onTap,
+        onLongPress: onLongPress,
+        padding: const EdgeInsets.symmetric(horizontal: 7.0),
+        enabled: enabled,
+        checked: false,
+        disclosure: true,
+      );
+
+  factory Cell.review({
+    Key key,
+    @required String message,
+    @required String name,
+    @required String time,
+    @required Widget avatar,
+    @required double rate,
+    VoidCallback onTap,
+  }) =>
+      Cell._(
+        key: key,
+        title: Text(message, overflow: TextOverflow.visible),
+        subtitle: RichText(
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          text: TextSpan(
+              style: _kSubheadlineStyle.copyWith(height: 1.0),
+              children: [
+                TextSpan(text: name),
+                _spaceSpan,
+                TextSpan(text: time),
+              ]),
+        ),
+        text: null,
+        after: null,
+        leading: RatingBarIndicator(
+          itemCount: 5,
+          rating: rate ?? 0,
+          itemSize: 14,
+          itemBuilder: (context, i) => Icon(CupertinoIcons.star_filled),
+        ),
+        trailing: avatar,
+        type: CellType.REVIEW,
+        onTap: onTap,
+        onLongPress: null,
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        enabled: true,
+        checked: false,
+        disclosure: false,
+      );
+
+  factory Cell.voucher({
+    Key key,
+    Widget child,
+    VoidCallback onTap,
+    VoidCallback onLongPress,
+    EdgeInsets padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    bool enabled: true,
+    bool checked,
+    bool disclosure,
+  }) =>
+      Cell._(
+        key: key,
+        title: child,
+        subtitle: null,
+        text: null,
+        after: null,
+        leading: null,
+        trailing: null,
+        type: CellType.VOUCHER,
+        onTap: onTap,
+        onLongPress: onLongPress,
+        padding: padding,
+        enabled: enabled,
+        checked: checked,
+        disclosure: disclosure,
+      );
+
+  factory Cell.action({
+    Key key,
+    @required Widget child,
+    @required VoidCallback onTap,
+    IconData icon,
+    bool destructive: false,
+    bool center: false,
+    bool loading: false,
+    bool enabled: true,
+    VoidCallback onLongPress,
+    EdgeInsets padding: const EdgeInsets.symmetric(horizontal: 16.0),
+  }) =>
+      Cell._(
+        key: key,
+        title: DefaultTextStyle(
+          textAlign: center ? TextAlign.center : TextAlign.left,
+          style: _kTitleStyle.copyWith(
+            color: onTap != null
+                ? (destructive ? _kDanger : _kPrimary)
+                : _kSecondaryLabel,
+            height: 1.0,
+          ),
+          child: child,
+        ),
+        subtitle: null,
+        text: null,
+        after: null,
+        leading: null,
+        trailing: icon == null
+            ? null
+            : Container(
+                decoration: BoxDecoration(
+                  color: Color(0xFF444444),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  color: destructive ? _kDanger : _kPrimary,
+                  size: 22,
+                ),
+              ),
+        type: CellType.ACTION,
+        onTap: onTap,
+        onLongPress: onLongPress,
+        padding: padding,
+        enabled: enabled,
+        disclosure: false,
+        checked: false,
+      );
+
+  factory Cell.detail({
+    Key key,
+    Widget header,
+    Widget content,
+    Widget status,
+    Widget after,
+    Widget trailing,
+    VoidCallback onTap,
+    EdgeInsets padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    bool enabled: true,
+  }) =>
+      Cell._(
+        key: key,
+        title: header,
+        subtitle: content,
+        text: status,
+        after: after,
+        leading: null,
+        trailing: trailing,
+        type: CellType.DETAIL,
+        onTap: onTap,
+        onLongPress: null,
+        padding: padding,
+        enabled: true,
+        checked: false,
+        disclosure: false,
+      );
+
+  factory Cell.profile({
+    Key key,
+    Widget child,
+    VoidCallback onChange,
+    EdgeInsets padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    bool enabled: true,
+  }) =>
+      Cell._(
+        key: key,
+        title: child,
+        subtitle: null,
+        text: null,
+        after: null,
+        leading: null,
+        trailing: null,
+        type: CellType.PROFILE,
+        onTap: onChange,
+        onLongPress: null,
+        padding: padding,
+        enabled: enabled,
+        checked: false,
+        disclosure: false,
+      );
+
+  factory Cell.product({
+    Key key,
+    Widget child,
+    VoidCallback onChange,
+    EdgeInsets padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    bool enabled: true,
+  }) =>
+      Cell._(
+        key: key,
+        title: child,
+        subtitle: null,
+        text: null,
+        after: null,
+        leading: null,
+        trailing: null,
+        type: CellType.PRODUCT,
+        onTap: onChange,
+        onLongPress: null,
+        padding: padding,
+        enabled: enabled,
+        checked: false,
+        disclosure: false,
+      );
+}
+
+class RawCell extends StatelessWidget {
+  final Widget title;
+  final Widget subtitle;
+  final Widget text;
+  final Widget after;
+  final Widget leading;
+  final Widget trailing;
+  final EdgeInsets padding;
+  final VoidCallback onTap;
+  final VoidCallback onLongPress;
+  final CellType type;
+  final bool enabled;
+  final bool checked;
+  final bool disclosure;
+
+  const RawCell({
+    Key key,
+    @required this.title,
+    @required this.subtitle,
+    @required this.text,
+    @required this.after,
+    @required this.leading,
+    @required this.trailing,
+    @required this.type,
+    @required this.padding,
+    @required this.onTap,
+    @required this.onLongPress,
+    @required this.enabled,
+    @required this.checked,
+    @required this.disclosure,
+  }) : super(key: key);
+
+  void _handleTap(BuildContext context) {
+    if (onTap != null) {
+      Feedback.forTap(context);
+      onTap();
+    }
+  }
+
+  void _handleLongPress(BuildContext context) {
+    if (onLongPress != null) {
+      Feedback.forLongPress(context);
+      onLongPress();
+    }
+  }
+
+  TextStyle _titleTextStyle(BuildContext context) {
+    final textTheme = CupertinoTheme.of(context).textTheme;
+
+    final defaultTextStyle = textTheme.body.copyWith(
+      height: 1,
+    );
+
+    switch (type) {
+      case CellType.MESSAGE:
+        return defaultTextStyle.copyWith(fontWeight: FontWeight.w600);
+      case CellType.DETAIL:
+        return textTheme.subhead.copyWith(
+          color: Colors.secondaryLabel.resolveFrom(context),
+        );
+      case CellType.REVIEW:
+        return textTheme.body.copyWith(height: 1.1);
+      default:
+        return defaultTextStyle;
+    }
+  }
+
+  TextStyle _subtitleTextStyle(BuildContext context) {
+    final textTheme = CupertinoTheme.of(context).textTheme;
+    switch (type) {
+      case CellType.DEFAULT:
+        return textTheme.caption1.copyWith(
+          color: Colors.inactiveGray.resolveFrom(context),
+        );
+      case CellType.SUBTITLE:
+        return textTheme.caption1.copyWith(
+            color: Colors.inactiveGray.resolveFrom(context), height: 1.0);
+      case CellType.MESSAGE:
+        return textTheme.subhead.copyWith(
+          color: Colors.secondaryLabel.resolveFrom(context),
+        );
+      case CellType.MAIL:
+        return textTheme.subhead;
+      case CellType.DETAIL:
+        return textTheme.body.copyWith(height: 1.25);
+      case CellType.REVIEW:
+        return textTheme.subhead.copyWith(
+          color: Colors.secondaryLabel.resolveFrom(context),
+        );
+      default:
+        return _kSubtitleStyle;
+    }
+  }
+
+  TextStyle _textTextStyle(BuildContext context) {
+    final textTheme = CupertinoTheme.of(context).textTheme;
+
+    switch (type) {
+      case CellType.DETAIL:
+        return textTheme.body;
+      default:
+        return textTheme.subhead.copyWith(
+          color: Colors.secondaryLabel.resolveFrom(context),
+        );
+    }
+  }
+
+  TextStyle get _afterTextStyle {
+    switch (type) {
+      case CellType.MESSAGE:
+        return _kSubheadlineStyle;
+      case CellType.MAIL:
+        return _kSubheadlineStyle;
+      case CellType.DETAIL:
+        return _kSubheadlineStyle.copyWith(
+          color: _kPrimary,
+        );
+      default:
+        return _kTitleStyle.copyWith(
+          color: _kSecondaryLabel,
+        );
+    }
+  }
+
+  Widget _trailing(
+    BuildContext context, [
+    bool checked,
+    bool disclosure,
+  ]) {
+    final _checked = checked ?? false;
+    final _disclosure = disclosure ?? false;
+
+    if (_checked || _disclosure)
+      return RichText(
+        text: TextSpan(
+          children: [
+            if (_checked)
+              IconSpan(
+                CupertinoIcons.check,
+                size: 24,
+                color: CupertinoTheme.of(context).primaryColor,
+              )
+            else if (_disclosure)
+              IconSpan(
+                CupertinoIcons.right_chevron,
+                size: 17,
+                color: Colors.disclosure.resolveFrom(context),
+                bolder: true,
+              ),
+          ],
+        ),
+      );
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool hasCallback = onTap != null || onLongPress != null;
+
+    Widget titleWidget;
+    if (title != null) {
+      titleWidget = DefaultTextStyle(
+        overflow: TextOverflow.ellipsis,
+        style: _titleTextStyle(context),
+        child: title,
+      );
+    }
+
+    Widget subtitleWidget;
+    if (subtitle != null) {
+      subtitleWidget = DefaultTextStyle(
+        overflow: TextOverflow.ellipsis,
+        style: _subtitleTextStyle(context),
+        child: subtitle,
+      );
+    }
+
+    Widget textWidget;
+    if (text != null) {
+      textWidget = DefaultTextStyle(
+        overflow: TextOverflow.ellipsis,
+        style: _textTextStyle(context),
+        child: text,
+      );
+    }
+
+    Widget afterWidget;
+    if (after != null) {
+      afterWidget = DefaultTextStyle(
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+        textAlign: TextAlign.right,
+        style: _afterTextStyle,
+        child: after,
+      );
+    }
+
+    Widget trailingWidget;
+    if (trailing != null) {
+      trailingWidget = DefaultTextStyle(
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+        textAlign: TextAlign.right,
+        style: _kTitleStyle.copyWith(color: _kSecondaryLabel),
+        child: trailing,
+      );
+    }
+
+//    final _cell = _Cell(
+//      title: Container(child: titleWidget, color: Color(0xFF777777)),
+//      subtitle: Container(child: subtitleWidget, color: Color(0xFF444444)),
+//      text: Container(child: textWidget, color: Color(0xFF555555)),
+//      after: afterWidget,
+//      leading: leading,
+//      trailing:
+//          trailing ?? _trailing(context, checked, disclosure ?? onTap != null),
+//      type: type,
+//    );
+
+    final _cell = _Cell(
+      title: titleWidget,
+      subtitle: subtitleWidget,
+      text: textWidget,
+      after: afterWidget,
+      leading: leading,
+      trailing: trailingWidget ??
+          _trailing(context, checked, disclosure ?? onTap != null),
+      type: type,
+    );
+
+    if (hasCallback) {
+      return _Tappable(
+        onTap: enabled && onTap != null ? onTap : null,
+        onLongPress: onLongPress != null ? onLongPress : null,
+        child: _Cell(
+          title: titleWidget,
+          subtitle: subtitleWidget,
+          text: textWidget,
+          after: afterWidget,
+          leading: leading,
+          trailing: trailingWidget ??
+              _trailing(context, checked, disclosure ?? onTap != null),
+          type: type,
+        ),
+      );
+    }
+
+    return RepaintBoundary(child: _cell);
+  }
+}
+
+class _Tappable extends StatefulWidget {
+  final VoidCallback onTap;
+  final VoidCallback onLongPress;
+  final Widget child;
+
+  const _Tappable({
+    Key key,
+    this.onTap,
+    this.onLongPress,
+    this.child,
+  }) : super(key: key);
+
+  @override
+  _TappableState createState() => _TappableState();
+}
+
+class _TappableState extends State<_Tappable> {
+  Timer _timer;
+
+  bool isPressed = false;
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _timer = null;
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(_Tappable oldWidget) {
+    if (_timer?.isActive ?? false) {
+      _timer.cancel();
+      if (isPressed) isPressed = false;
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  void onTap() {
+    if (widget.onTap != null) {
+      Feedback.forTap(context);
+      widget.onTap();
+    }
+  }
+
+  void onLongPress() {
+    if (widget.onLongPress != null) {
+      Feedback.forLongPress(context);
+      widget.onLongPress();
+    }
+  }
+
+  onTapDown(TapDownDetails _) {
+    if (!isPressed) {
+      setState(() {
+        isPressed = true;
+      });
+    }
+  }
+
+  onTapUp(TapUpDetails _) {
+    if (isPressed) {
+      _timer = Timer(Duration(milliseconds: 200), () {
+        setState(() {
+          isPressed = false;
+        });
+      });
+    }
+  }
+
+  void onTapCancel() {
+    if (isPressed) {
+      setState(() {
+        isPressed = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final child = GestureDetector(
+      onTap: onTap,
+      onTapDown: onTapDown,
+      onTapUp: onTapUp,
+      onTapCancel: onTapCancel,
+      onLongPress: onLongPress,
+      behavior: HitTestBehavior.opaque,
+      child: widget.child,
+    );
+
+    if (context.findAncestorRenderObjectOfType<RenderSectionCells>() != null)
+      return CellParentDataWidget(
+        isPressed: isPressed,
+        child: child,
+      );
+
+    return child;
+  }
+}
+
+//double get _minHeight {
+//  switch (type) {
+//    case CellType.MESSAGE:
+//      return 76.0;
+//    case CellType.MAIL:
+//      return 98.0;
+//    case CellType.VOUCHER:
+//      return 58.0;
+//    case CellType.SWITCHER:
+//      return 44.0;
+//    case CellType.PROFILE:
+//      return 80.0;
+//    case CellType.DETAIL:
+//      return 66.0;
+//    case CellType.PRODUCT:
+//      return 94.0;
+//    case CellType.REVIEW:
+//      return 44.0;
+//    default:
+//      return 0.0;
+//  }
+//}
 
 enum _Slot {
   title,
@@ -21,9 +805,6 @@ class _Cell extends RenderObjectWidget {
     @required this.after,
     @required this.trailing,
     @required this.type,
-    this.isPressed: false,
-    this.hasBackground: false,
-    this.hasDivider: false,
   }) : super(key: key);
 
   final Widget leading;
@@ -33,37 +814,18 @@ class _Cell extends RenderObjectWidget {
   final Widget after;
   final Widget trailing;
   final CellType type;
-  final bool isPressed;
-  final bool hasBackground;
-  final bool hasDivider;
 
   @override
   _CellElement createElement() => _CellElement(this);
 
   @override
   _RenderCell createRenderObject(BuildContext context) {
-    return _RenderCell(
-      type: type,
-      isPressed: isPressed,
-      hasBackground: hasBackground,
-      hasDivider: hasDivider,
-      dividerThickness: kDividerThickness / MediaQuery.of(context).devicePixelRatio,
-      dividerColor: Colors.divider.resolveFrom(context),
-      backgroundColor: Colors.secondarySystemGroupedBackground.resolveFrom(context),
-      pressedColor: Colors.tertiarySystemGroupedBackground.resolveFrom(context),
-    );
+    return _RenderCell(type: type);
   }
 
   @override
   void updateRenderObject(BuildContext context, _RenderCell renderObject) {
-    renderObject..type = type
-      ..isPressed = isPressed
-      ..hasBackground = hasBackground
-      ..hasDivider = hasDivider
-      ..dividerThickness = kDividerThickness / MediaQuery.of(context).devicePixelRatio
-      ..dividerColor = Colors.divider.resolveFrom(context)
-      ..backgroundColor = Colors.secondarySystemGroupedBackground.resolveFrom(context)
-      ..pressedColor = Colors.tertiarySystemGroupedBackground.resolveFrom(context);
+    renderObject..type = type;
   }
 }
 
@@ -192,72 +954,9 @@ class _CellElement extends RenderObjectElement {
 
 class _RenderCell extends RenderBox {
   _RenderCell({
-    @required double dividerThickness,
     @required CellType type,
-    @required bool hasBackground,
-    @required bool hasDivider,
-    @required bool isPressed,
-    @required Color dividerColor,
-    @required Color backgroundColor,
-    @required Color pressedColor,
   })  : assert(type != null),
-        _type = type,
-        _hasBackground = hasBackground,
-        _hasDivider = hasDivider,
-        _isPressed = isPressed,
-        _dividerThickness = dividerThickness,
-        _buttonBackgroundPaint = Paint()
-          ..style = PaintingStyle.fill
-          ..color = backgroundColor,
-        _pressedButtonBackgroundPaint = Paint()
-          ..style = PaintingStyle.fill
-          ..color = pressedColor,
-        _dividerPaint = Paint()
-          ..color = dividerColor
-          ..style = PaintingStyle.fill;
-
-  final Paint _buttonBackgroundPaint;
-  final Paint _pressedButtonBackgroundPaint;
-  final Paint _dividerPaint;
-
-  double get dividerThickness => _dividerThickness;
-  double _dividerThickness;
-
-  set dividerThickness(double newValue) {
-    if (newValue == _dividerThickness) {
-      return;
-    }
-
-    _dividerThickness = newValue;
-    markNeedsLayout();
-  }
-
-  Color get backgroundColor => _buttonBackgroundPaint.color;
-  set backgroundColor(Color newValue) {
-    if (newValue == _buttonBackgroundPaint.color) {
-      return;
-    }
-    _buttonBackgroundPaint.color = newValue;
-    markNeedsPaint();
-  }
-
-  Color get pressedColor => _pressedButtonBackgroundPaint.color;
-  set pressedColor(Color newValue) {
-    if (newValue == _pressedButtonBackgroundPaint.color) {
-      return;
-    }
-    _pressedButtonBackgroundPaint.color = newValue;
-    markNeedsPaint();
-  }
-
-  Color get dividerColor => _dividerPaint.color;
-  set dividerColor(Color value) {
-    if (value == _dividerPaint.color) {
-      return;
-    }
-    _dividerPaint.color = value;
-    markNeedsPaint();
-  }
+        _type = type;
 
   static const double _kGap = 15.0;
   static const double _kDGap = 12.0;
@@ -448,13 +1147,13 @@ class _RenderCell extends RenderBox {
   @override
   double computeMinIntrinsicHeight(double width) {
     return math.max(_minHeight(title, width), _minHeight(subtitle, width)) +
-        _maxHeight(text, width) + dividerThickness;
+        _maxHeight(text, width);
   }
 
   @override
   double computeMaxIntrinsicHeight(double width) {
     return math.max(_maxHeight(title, width), _maxHeight(subtitle, width)) +
-        _maxHeight(text, width) + dividerThickness;
+        _maxHeight(text, width);
   }
 
 //
@@ -519,8 +1218,6 @@ class _RenderCell extends RenderBox {
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    _drawButtonBackgroundsAndDividersStacked(context.canvas, offset);
-
     void doPaint(RenderBox child) {
       if (child != null) {
         final BoxParentData parentData = child.parentData as BoxParentData;
@@ -534,46 +1231,6 @@ class _RenderCell extends RenderBox {
     doPaint(after);
     doPaint(leading);
     doPaint(trailing);
-  }
-
-  void _drawButtonBackgroundsAndDividersStacked(Canvas canvas, Offset offset) {
-    final Path backgroundFillPath = Path()
-      ..addRect(Rect.fromLTWH(0.0, 0.0, size.width, size.height));
-
-    final Path pressedBackgroundFillPath = Path();
-    final Path dividersPath = Path();
-    final Offset accumulatingOffset = offset;
-    final bool isButtonPressed = isPressed;
-    final bool isDividerPresent = true;
-    final bool isDividerPainted = isDividerPresent && !(isButtonPressed);
-
-    final Rect dividerRect = Rect.fromLTWH(
-      accumulatingOffset.dx + 15.0,
-      size.height - dividerThickness,
-      size.width - 15.0,
-      dividerThickness,
-    );
-
-    final Rect buttonBackgroundRect = Rect.fromLTWH(
-      accumulatingOffset.dx,
-      accumulatingOffset.dy - dividerThickness,
-      size.width,
-      size.height + (dividerThickness * 2),
-    );
-
-    if (isPressed) {
-      backgroundFillPath.addRect(buttonBackgroundRect);
-      pressedBackgroundFillPath.addRect(buttonBackgroundRect);
-    }
-
-    if (isDividerPainted) {
-      backgroundFillPath.addRect(dividerRect);
-      dividersPath.addRect(dividerRect);
-    }
-
-    canvas.drawPath(backgroundFillPath, _buttonBackgroundPaint);
-    canvas.drawPath(pressedBackgroundFillPath, _pressedButtonBackgroundPaint);
-    canvas.drawPath(dividersPath, _dividerPaint);
   }
 
   @override
@@ -649,7 +1306,7 @@ class _RenderCell extends RenderBox {
     final titleSize = _layoutBox(title, textConstraints);
 
     final BoxConstraints afterConstraints =
-    looseConstraints.tighten(width: containerWidth - titleSize.width);
+        looseConstraints.tighten(width: containerWidth - titleSize.width);
 
     final Size afterSize = _layoutBox(after, afterConstraints);
 
@@ -923,14 +1580,15 @@ class _RenderCell extends RenderBox {
     if (hasLeading) _positionBox(leading, Offset(_padding, leadingY));
     if (hasTrailing) _positionBox(trailing, Offset(trailingX, trailingY));
 
-    if(hasSubtitle) {
+    if (hasSubtitle) {
       _positionBox(title, Offset(titleStart, topStart));
       _positionBox(
         subtitle,
         Offset(titleStart, topStart + titleSize.height + 2.0),
       );
     } else {
-      _positionBox(title, Offset(titleStart, (tileHeight - titleSize.height) / 2.0));
+      _positionBox(
+          title, Offset(titleStart, (tileHeight - titleSize.height) / 2.0));
     }
 
     if (hasAfter) _positionBox(after, Offset(afterX, afterY));
@@ -1041,7 +1699,7 @@ class _RenderCell extends RenderBox {
     final BoxConstraints looseConstraints = constraints.loosen();
 
     final BoxConstraints trailingConstraints =
-    looseConstraints.tighten(width: 90, height: 82);
+        looseConstraints.tighten(width: 90, height: 82);
 
     final double tileWidth = looseConstraints.maxWidth;
     final Size trailingSize = _layoutBox(trailing, trailingConstraints);
@@ -1055,7 +1713,7 @@ class _RenderCell extends RenderBox {
 
     final BoxConstraints headerConstraints = looseConstraints.tighten(
       width:
-      tileWidth - trailingWidth - afterWidth - contentGap - (_padding * 2),
+          tileWidth - trailingWidth - afterWidth - contentGap - (_padding * 2),
     );
     final BoxConstraints subtitleConstraints = looseConstraints.tighten(
       width: tileWidth -
@@ -1092,4 +1750,215 @@ class _RenderCell extends RenderBox {
   }
 
   void productLayout() {}
+}
+
+const Color _kPrimaryLabel = Color.fromRGBO(255, 255, 255, 1.0);
+const Color _kSecondaryLabel = Color.fromRGBO(235, 235, 245, 0.6);
+const Color _kPrimary = Color(0xFFFBC02D);
+const Color _kDanger = Color(0xFFFD5739);
+
+const Color _kBackgroundColor = Color.fromARGB(255, 26, 26, 28);
+const Color _kDividerColor = Color.fromARGB(255, 54, 54, 58);
+const Color _kPressedColor = Color(0xFF2E2E2E);
+
+const _spaceSpan = TextSpan(
+  text: " • ",
+  style: TextStyle(
+    fontSize: 10.0,
+    inherit: false,
+  ),
+);
+
+const TextStyle _kTitleStyle = TextStyle(
+  inherit: false,
+  fontFamily: '.SF Pro Text',
+  fontSize: 17.0,
+  letterSpacing: -0.41,
+  height: 1,
+  fontWeight: FontWeight.w400,
+  color: _kPrimaryLabel,
+  decoration: TextDecoration.none,
+);
+
+const TextStyle _kSubtitleStyle = TextStyle(
+  inherit: false,
+  fontFamily: '.SF Pro Text',
+  fontSize: 12.0,
+  letterSpacing: 0.0,
+  height: 1,
+  color: Colors.inactiveGray,
+  decoration: TextDecoration.none,
+);
+
+const TextStyle _kSubheadlineStyle = TextStyle(
+  inherit: false,
+  fontFamily: '.SF Pro Text',
+  fontSize: 15.0,
+  letterSpacing: -0.24,
+  height: 1.2,
+  color: _kSecondaryLabel,
+  decoration: TextDecoration.none,
+);
+
+const TextStyle _kAfterStyle = TextStyle(
+  inherit: false,
+  fontFamily: '.SF Pro Text',
+  fontSize: 17.0,
+  letterSpacing: -0.41,
+  color: Colors.detailGray,
+  decoration: TextDecoration.none,
+);
+
+const TextStyle _kErrorStyle = TextStyle(
+  inherit: false,
+  fontFamily: '.SF Pro Text',
+  fontSize: 10.0,
+  letterSpacing: -0.41,
+  fontWeight: FontWeight.w400,
+  color: _kDanger,
+);
+
+class ActionIcon extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+
+class IconSpan extends TextSpan {
+  IconSpan(IconData icon, {Color color, double size, bool bolder: false})
+      : super(
+          text: String.fromCharCode(icon.codePoint),
+          style: TextStyle(
+            inherit: false,
+            fontFamily: icon.fontFamily,
+            package: icon.fontPackage,
+            height: 1,
+            fontSize: size,
+            color: color,
+            fontWeight: bolder ? FontWeight.bold : FontWeight.normal,
+          ),
+        );
+}
+
+class LinkSpan extends StatefulWidget {
+  final String title;
+  final VoidCallback onTap;
+  final bool subheading;
+
+  const LinkSpan(
+    this.title, {
+    Key key,
+    @required this.onTap,
+    this.subheading: false,
+  }) : super(key: key);
+
+  @override
+  _LinkSpanState createState() => _LinkSpanState();
+}
+
+class _LinkSpanState extends State<LinkSpan> {
+  Timer _timer;
+
+  double opacity = 1.0;
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _timer = null;
+    super.dispose();
+  }
+
+  onTap() {
+    Feedback.forTap(context);
+    widget.onTap();
+  }
+
+  onTapDown(TapDownDetails _) {
+    setState(() {
+      opacity = 0.7;
+    });
+  }
+
+  onTapUp(TapUpDetails _) {
+    _timer = Timer(Duration(milliseconds: 100), () {
+      setState(() {
+        opacity = 1.0;
+      });
+    });
+  }
+
+  void onTapCancel() {
+    setState(() {
+      opacity = 1.0;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedOpacity(
+      opacity: opacity,
+      duration: const Duration(milliseconds: 50),
+      child: GestureDetector(
+        onTapDown: onTapDown,
+        onTapUp: onTapUp,
+        onTap: onTap,
+        onTapCancel: onTapCancel,
+        behavior: HitTestBehavior.opaque,
+        child: Text(
+          widget.title,
+          style: !widget.subheading
+              ? _kTitleStyle
+              : _kSubheadlineStyle.copyWith(color: _kPrimary),
+        ),
+      ),
+    );
+  }
+}
+
+enum TestCellAction {
+  enabled,
+  disabled,
+  delete,
+  insert,
+  selected,
+  unselected,
+}
+
+Icon getCellActionIcon(TestCellAction action) {
+  IconData icon;
+  Color color;
+
+  switch (action) {
+    case TestCellAction.delete:
+      icon = CupertinoIcons.minus_circled_filled;
+      color = const Color(0xFFFF453A);
+      break;
+    case TestCellAction.insert:
+      icon = CupertinoIcons.add_circled_solid;
+      color = const Color(0xFF32D74B);
+      break;
+    case TestCellAction.selected:
+      icon = CupertinoIcons.check_mark_circled_solid;
+      color = const Color(0xFF0A84FF);
+      break;
+    case TestCellAction.unselected:
+      icon = CupertinoIcons.circle;
+      color = const Color(0xFF48484A);
+      break;
+    case TestCellAction.enabled:
+      icon = Icons.fiber_manual_record;
+      color = const Color(0xFF32D74B);
+      break;
+    case TestCellAction.disabled:
+      icon = Icons.fiber_manual_record;
+      color = const Color(0xFFFF453A);
+      break;
+  }
+
+  return Icon(
+    icon,
+    color: color,
+    size: 22.0,
+  );
 }

@@ -26,17 +26,17 @@ const TextStyle _kActionSheetContentStyle = TextStyle(
   textBaseline: TextBaseline.alphabetic,
 );
 
-const Color _kBackgroundColor = CupertinoDynamicColor.withBrightness(
+const Color _kBackgroundColor = DynamicColor.withBrightness(
   color: Color(0xC7F9F9F9),
   darkColor: Color(0xC7252525),
 );
 
-const Color _kPressedColor = CupertinoDynamicColor.withBrightness(
+const Color _kPressedColor = DynamicColor.withBrightness(
   color: Color(0xFFE1E1E1),
   darkColor: Color(0xFF2E2E2E),
 );
 
-const Color _kCancelPressedColor = CupertinoDynamicColor.withBrightness(
+const Color _kCancelPressedColor = DynamicColor.withBrightness(
   color: Color(0xFFECECEC),
   darkColor: Color(0xFF49494B),
 );
@@ -92,7 +92,7 @@ class CupertinoActionSheet extends StatelessWidget {
     }
 
     return Container(
-      color: CupertinoDynamicColor.resolve(_kBackgroundColor, context),
+      color: DynamicColor.resolve(_kBackgroundColor, context),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -202,7 +202,7 @@ class CupertinoActionSheetAction extends StatelessWidget {
   Widget build(BuildContext context) {
     TextStyle style = _kActionSheetActionStyle.copyWith(
       color: isDestructiveAction
-          ? CupertinoDynamicColor.resolve(CupertinoColors.systemRed, context)
+          ? DynamicColor.resolve(Colors.systemRed, context)
           : CupertinoTheme.of(context).primaryColor,
     );
 
@@ -276,7 +276,7 @@ class _CupertinoActionSheetCancelButtonState
   Widget build(BuildContext context) {
     final Color backgroundColor = isBeingPressed
         ? _kCancelPressedColor
-        : CupertinoColors.secondarySystemGroupedBackground;
+        : Colors.secondarySystemGroupedBackground;
     return GestureDetector(
       excludeFromSemantics: true,
       onTapDown: _onTapDown,
@@ -284,7 +284,7 @@ class _CupertinoActionSheetCancelButtonState
       onTapCancel: _onTapCancel,
       child: Container(
         decoration: BoxDecoration(
-          color: CupertinoDynamicColor.resolve(backgroundColor, context),
+          color: DynamicColor.resolve(backgroundColor, context),
           borderRadius: BorderRadius.circular(_kCornerRadius),
         ),
         child: widget.child,
@@ -309,7 +309,7 @@ class _CupertinoAlertRenderWidget extends RenderObjectWidget {
       dividerThickness:
           _kDividerThickness / MediaQuery.of(context).devicePixelRatio,
       dividerColor:
-          CupertinoDynamicColor.resolve(_kButtonDividerColor, context),
+          DynamicColor.resolve(_kButtonDividerColor, context),
     );
   }
 
@@ -318,7 +318,7 @@ class _CupertinoAlertRenderWidget extends RenderObjectWidget {
       BuildContext context, _RenderCupertinoAlert renderObject) {
     super.updateRenderObject(context, renderObject);
     renderObject.dividerColor =
-        CupertinoDynamicColor.resolve(_kButtonDividerColor, context);
+        DynamicColor.resolve(_kButtonDividerColor, context);
   }
 
   @override
@@ -871,11 +871,11 @@ class _CupertinoAlertActionsRenderWidget extends MultiChildRenderObjectWidget {
     return _RenderCupertinoAlertActions(
       dividerThickness: _dividerThickness,
       dividerColor:
-          CupertinoDynamicColor.resolve(_kButtonDividerColor, context),
+          DynamicColor.resolve(_kButtonDividerColor, context),
       hasCancelButton: _hasCancelButton,
       backgroundColor:
-          CupertinoDynamicColor.resolve(_kBackgroundColor, context),
-      pressedColor: CupertinoDynamicColor.resolve(_kPressedColor, context),
+          DynamicColor.resolve(_kBackgroundColor, context),
+      pressedColor: DynamicColor.resolve(_kPressedColor, context),
     );
   }
 
@@ -885,11 +885,11 @@ class _CupertinoAlertActionsRenderWidget extends MultiChildRenderObjectWidget {
     renderObject
       ..dividerThickness = _dividerThickness
       ..dividerColor =
-          CupertinoDynamicColor.resolve(_kButtonDividerColor, context)
+          DynamicColor.resolve(_kButtonDividerColor, context)
       ..hasCancelButton = _hasCancelButton
       ..backgroundColor =
-          CupertinoDynamicColor.resolve(_kBackgroundColor, context)
-      ..pressedColor = CupertinoDynamicColor.resolve(_kPressedColor, context);
+          DynamicColor.resolve(_kBackgroundColor, context)
+      ..pressedColor = DynamicColor.resolve(_kPressedColor, context);
   }
 }
 

@@ -60,12 +60,12 @@ const double _kDividerThickness = 1.0;
 // A translucent color that is painted on top of the blurred backdrop as the
 // dialog's background color
 // Extracted from https://developer.apple.com/design/resources/.
-const Color _kDialogColor = CupertinoDynamicColor.withBrightness(
+const Color _kDialogColor = DynamicColor.withBrightness(
   color: Color(0xCCF2F2F2),
   darkColor: Color(0xBF1E1E1E),
 );
 
-const Color _kDialogPressedColor = CupertinoDynamicColor.withBrightness(
+const Color _kDialogPressedColor = DynamicColor.withBrightness(
   color: Color(0xFFE1E1E1),
   darkColor: Color(0xFF2E2E2E),
 );
@@ -115,7 +115,7 @@ class CupertinoAlertDialog extends StatelessWidget {
     ];
 
     return Container(
-      color: CupertinoDynamicColor.resolve(_kDialogColor, context),
+      color: DynamicColor.resolve(_kDialogColor, context),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -264,8 +264,8 @@ class CupertinoFormDialog extends StatelessWidget {
                     ),
                     child: DefaultTextStyle(
                       style: _kCupertinoDialogContentStyle.copyWith(
-                        color: CupertinoDynamicColor.resolve(
-                            CupertinoColors.label, context),
+                        color: DynamicColor.resolve(
+                            Colors.label, context),
                       ),
                       textAlign: TextAlign.center,
                       child: field,
@@ -278,7 +278,7 @@ class CupertinoFormDialog extends StatelessWidget {
     ];
 
     return Container(
-      color: CupertinoDynamicColor.resolve(_kDialogColor, context),
+      color: DynamicColor.resolve(_kDialogColor, context),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -440,7 +440,7 @@ class CupertinoPopupSurface extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: _kBlurAmount, sigmaY: _kBlurAmount),
         child: Container(
           color: isSurfacePainted
-              ? CupertinoDynamicColor.resolve(_kDialogColor, context)
+              ? DynamicColor.resolve(_kDialogColor, context)
               : null,
           child: child,
         ),
@@ -470,7 +470,7 @@ class _CupertinoDialogRenderWidget extends RenderObjectWidget {
           _kDividerThickness / MediaQuery.of(context).devicePixelRatio,
       isInAccessibilityMode: _isInAccessibilityMode(context),
       dividerColor:
-          CupertinoDynamicColor.resolve(CupertinoColors.separator, context),
+          DynamicColor.resolve(Colors.separator, context),
     );
   }
 
@@ -480,7 +480,7 @@ class _CupertinoDialogRenderWidget extends RenderObjectWidget {
     renderObject
       ..isInAccessibilityMode = _isInAccessibilityMode(context)
       ..dividerColor =
-          CupertinoDynamicColor.resolve(CupertinoColors.separator, context);
+          DynamicColor.resolve(Colors.separator, context);
   }
 
   @override
@@ -964,7 +964,7 @@ class _CupertinoAlertContentSection extends StatelessWidget {
           child: DefaultTextStyle(
             style: _kCupertinoDialogTitleStyle.copyWith(
               color:
-                  CupertinoDynamicColor.resolve(CupertinoColors.label, context),
+                  DynamicColor.resolve(Colors.label, context),
             ),
             textAlign: TextAlign.center,
             child: title,
@@ -981,7 +981,7 @@ class _CupertinoAlertContentSection extends StatelessWidget {
           child: DefaultTextStyle(
             style: _kCupertinoDialogContentStyle.copyWith(
               color:
-                  CupertinoDynamicColor.resolve(CupertinoColors.label, context),
+                  DynamicColor.resolve(Colors.label, context),
             ),
             textAlign: TextAlign.center,
             child: content,
@@ -1233,8 +1233,8 @@ class CupertinoDialogAction extends StatelessWidget {
     final theme = CupertinoTheme.of(context);
 
     TextStyle style = _kCupertinoDialogActionStyle.copyWith(
-      color: CupertinoDynamicColor.resolve(
-        isDestructiveAction ? CupertinoColors.systemRed : theme.primaryColor,
+      color: DynamicColor.resolve(
+        isDestructiveAction ? Colors.systemRed : theme.primaryColor,
         context,
       ),
     );
@@ -1307,11 +1307,11 @@ class _CupertinoDialogActionsRenderWidget extends MultiChildRenderObjectWidget {
           ? _kAccessibilityCupertinoDialogWidth
           : _kCupertinoDialogWidth,
       dividerThickness: _dividerThickness,
-      dialogColor: CupertinoDynamicColor.resolve(_kDialogColor, context),
+      dialogColor: DynamicColor.resolve(_kDialogColor, context),
       dialogPressedColor:
-          CupertinoDynamicColor.resolve(_kDialogPressedColor, context),
+          DynamicColor.resolve(_kDialogPressedColor, context),
       dividerColor:
-          CupertinoDynamicColor.resolve(CupertinoColors.separator, context),
+          DynamicColor.resolve(Colors.separator, context),
     );
   }
 
@@ -1323,11 +1323,11 @@ class _CupertinoDialogActionsRenderWidget extends MultiChildRenderObjectWidget {
           ? _kAccessibilityCupertinoDialogWidth
           : _kCupertinoDialogWidth
       ..dividerThickness = _dividerThickness
-      ..dialogColor = CupertinoDynamicColor.resolve(_kDialogColor, context)
+      ..dialogColor = DynamicColor.resolve(_kDialogColor, context)
       ..dialogPressedColor =
-          CupertinoDynamicColor.resolve(_kDialogPressedColor, context)
+          DynamicColor.resolve(_kDialogPressedColor, context)
       ..dividerColor =
-          CupertinoDynamicColor.resolve(CupertinoColors.separator, context);
+          DynamicColor.resolve(Colors.separator, context);
   }
 }
 

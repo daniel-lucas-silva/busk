@@ -1,9 +1,12 @@
 import 'dart:math' as math;
 
+import 'package:busk/busk.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/rendering.dart';
+import '../../theme.dart';
+import '../constants.dart';
 import '../utils/extensions.dart';
 
 part 'section.widgets.dart';
@@ -12,51 +15,24 @@ part 'section.decoration.dart';
 
 int _kDefaultSemanticIndexCallback(Widget _, int localIndex) => localIndex;
 
-typedef _IndexedCellBuilder = Widget Function(BuildContext context, int index);
-
-class Section extends StatelessWidget {
-  final List<Widget> children;
-  final TestSectionHeader header;
-  final TestSectionDescription description;
-
-  const Section({
+class Section extends SliverList {
+  Section._({
     Key key,
-    this.header: const TestSectionHeader(null),
-    this.description: const TestSectionDescription(null),
-    this.children = const <Widget>[],
-  });
-
-  @override
-  Widget build(BuildContext context) {
-
-    return Column(
-      children: [
-        header,
-        ...children,
-        description,
-      ],
-    );
-  }
-}
-
-class SliverSection extends SliverList {
-  SliverSection._({
-    Key key,
-    TestSectionHeader header,
-    TestSectionDescription description,
+    Widget header,
+    Widget footer,
     ChildIndexGetter findChildIndexCallback,
     SemanticIndexCallback semanticIndexCallback: _kDefaultSemanticIndexCallback,
     int semanticIndexOffset: 0,
     bool addSemanticIndexes: true,
     bool addRepaintBoundaries: true,
     bool addAutomaticKeepAlives: true,
-    @required _IndexedCellBuilder itemBuilder,
+    @required IndexedWidgetBuilder itemBuilder,
     @required int itemCount,
   }) : super(
           key: key,
           delegate: _BuildDelegate(
             header: header,
-            description: description,
+            footer: footer,
             itemBuilder: itemBuilder,
             itemCount: itemCount,
             addAutomaticKeepAlives: addAutomaticKeepAlives,
@@ -68,32 +44,32 @@ class SliverSection extends SliverList {
           ),
         );
 
-  factory SliverSection({
-    TestSectionHeader header: const TestSectionHeader(null),
-    TestSectionDescription description: const TestSectionDescription(null),
+  factory Section({
+    Widget header,
+    Widget footer,
     List<Widget> children,
   }) {
     assert(children != null);
-    return SliverSection._(
+    return Section._(
       header: header,
-      description: description,
+      footer: footer,
       itemCount: children.length,
       itemBuilder: (context, index) => children[index],
     );
   }
 
-  factory SliverSection.dynamic({
-    TestSectionHeader header: const TestSectionHeader(null),
-    TestSectionDescription description: const TestSectionDescription(null),
+  factory Section.dynamic({
+    Widget header,
+    Widget description,
     @required int itemCount,
-    @required _IndexedCellBuilder itemBuilder,
+    @required IndexedWidgetBuilder itemBuilder,
   }) {
     assert(itemBuilder != null);
     assert(itemCount != null);
 
-    return SliverSection._(
+    return Section._(
       header: header,
-      description: description,
+      footer: description,
       itemBuilder: itemBuilder,
       itemCount: itemCount,
     );
@@ -105,7 +81,7 @@ class _BuildDelegate extends SliverChildDelegate {
     @required this.itemBuilder,
     @required this.itemCount,
     this.header,
-    this.description,
+    this.footer,
     this.findChildIndexCallback,
     this.addAutomaticKeepAlives = true,
     this.addRepaintBoundaries = true,
@@ -119,9 +95,9 @@ class _BuildDelegate extends SliverChildDelegate {
         assert(addSemanticIndexes != null),
         assert(semanticIndexCallback != null);
 
-  final TestSectionHeader header;
-  final TestSectionDescription description;
-  final _IndexedCellBuilder itemBuilder;
+  final Widget header;
+  final Widget footer;
+  final IndexedWidgetBuilder itemBuilder;
   final int itemCount;
   final bool addAutomaticKeepAlives;
   final bool addRepaintBoundaries;
@@ -129,6 +105,89 @@ class _BuildDelegate extends SliverChildDelegate {
   final SemanticIndexCallback semanticIndexCallback;
   final int semanticIndexOffset;
   final ChildIndexGetter findChildIndexCallback;
+
+  Widget buildFooter(BuildContext context) {
+    Widget content;
+
+    if (footer is Text)
+      content = DefaultTextStyle(
+        style: CupertinoTheme.of(context).textTheme.footnote,
+        child: Container(
+          padding: EdgeInsets.only(
+            bottom: 5.0,
+            top: 5.0,
+            left: 16.0,
+            right: 16.0,
+          ),
+          alignment: Alignment.topLeft,
+          constraints: const BoxConstraints(minHeight: 38.0),
+          child: footer,
+        ),
+      );
+    else
+      content = SizedBox(height: 10.0);
+
+    final dividerThickness = kDividerThickness / MediaQuery.of(context).devicePixelRatio;
+
+    return Stack(
+      overflow: Overflow.visible,
+      children: <Widget>[
+        content,
+        Positioned(
+          top: -dividerThickness,
+          height: dividerThickness,
+          left: 0,
+          right: 0,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.divider.resolveFrom(context)
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildHeader(BuildContext context) {
+    Widget content;
+    if (header is Text)
+      content = DefaultTextStyle(
+        style: CupertinoTheme.of(context).textTheme.footnote,
+        child: Container(
+          padding: EdgeInsets.only(
+            bottom: 5.0,
+            top: 5.0,
+            left: 16.0,
+            right: 16.0,
+          ),
+          alignment: Alignment.bottomLeft,
+          constraints: const BoxConstraints(minHeight: 38.0),
+          child: header,
+        ),
+      );
+    else
+      content = SizedBox(height: 36.0);
+
+    final dividerThickness = kDividerThickness / MediaQuery.of(context).devicePixelRatio;
+
+    return Stack(
+      overflow: Overflow.visible,
+      children: <Widget>[
+        content,
+        Positioned(
+          bottom: 0,
+          height: dividerThickness,
+          left: 0,
+          right: 0,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+                color: Colors.divider.resolveFrom(context)
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
   @override
   int findIndexByKey(Key key) {
@@ -150,13 +209,12 @@ class _BuildDelegate extends SliverChildDelegate {
 
     if (index < 0 || (itemCount != null && index >= itemCount + 2)) return null;
 
-    if (index == 0)
-      return itemCount == 0 ? Offstage() : header;
+    if (index == 0) return itemCount == 0 ? Offstage() : buildHeader(context);
 
     index -= 1;
 
     if (index == itemCount)
-      return itemCount == 0 ? Offstage() : description;
+      return itemCount == 0 ? Offstage() : buildFooter(context);
 
     Widget child;
     try {

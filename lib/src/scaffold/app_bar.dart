@@ -71,21 +71,15 @@ Widget _wrapWithBackground({
 }) {
   Widget result = child;
   if (updateSystemUiOverlay) {
-    final bool isDark = backgroundColor.computeLuminance() < 0.179;
-    final Brightness newBrightness =
-        brightness ?? (isDark ? Brightness.dark : Brightness.light);
-    SystemUiOverlayStyle overlayStyle;
-    switch (newBrightness) {
-      case Brightness.dark:
-        overlayStyle = SystemUiOverlayStyle.light;
-        break;
-      case Brightness.light:
-      default:
-        overlayStyle = SystemUiOverlayStyle.dark;
-        break;
-    }
+    final bool darkBackground = backgroundColor.computeLuminance() < 0.179;
+    final Brightness brightness =
+    darkBackground ? Brightness.light : Brightness.dark;
     result = AnnotatedRegion<SystemUiOverlayStyle>(
-      value: overlayStyle,
+      value: SystemUiOverlayStyle(
+        statusBarColor: Color(0x00000000),
+        statusBarIconBrightness: brightness,
+        statusBarBrightness: brightness,
+      ),
       sized: true,
       child: result,
     );
@@ -274,7 +268,7 @@ class _LargeTitleNavigationBarSliverDelegate
         shrinkOffset < maxExtent - minExtent - _kNavBarShowLargeTitleThreshold;
 
     final textTheme = CupertinoTheme.of(context).textTheme;
-    final bgColor = CupertinoDynamicColor.resolve(backgroundColor, context);
+    final bgColor = DynamicColor.resolve(backgroundColor, context);
 
     final _PersistentNavigationBar persistentNavigationBar =
         _PersistentNavigationBar(
@@ -319,7 +313,7 @@ class _LargeTitleNavigationBarSliverDelegate
                             child: DefaultTextStyle(
                               style: CupertinoTheme.of(context)
                                   .textTheme
-                                  .navLargeTitleTextStyle,
+                                  .largeTitle,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               child: components.largeTitle,
@@ -357,9 +351,11 @@ class _LargeTitleNavigationBarSliverDelegate
       child: _TransitionableNavigationBar(
         componentsKeys: keys,
         backgroundColor: bgColor,
-        backButtonTextStyle: textTheme.navActionTextStyle,
-        titleTextStyle: textTheme.navTitleTextStyle,
-        largeTitleTextStyle: textTheme.navLargeTitleTextStyle,
+        backButtonTextStyle: textTheme.body.copyWith(
+          color: CupertinoTheme.of(context).primaryColor,
+        ),
+        titleTextStyle: textTheme.body,
+        largeTitleTextStyle: textTheme.largeTitle,
         border: border,
         hasUserMiddle: userMiddle != null,
         largeExpanded: showLargeTitle,
@@ -403,7 +399,7 @@ class _PersistentNavigationBar extends StatelessWidget {
 
     if (middle != null) {
       middle = DefaultTextStyle(
-        style: CupertinoTheme.of(context).textTheme.navTitleTextStyle,
+        style: CupertinoTheme.of(context).textTheme.body,
         child: Semantics(header: true, child: middle),
       );
 
@@ -560,7 +556,7 @@ class _NavigationBarStaticComponents {
         route is PageRoute &&
         route.canPop &&
         route.fullscreenDialog) {
-      leadingContent = CupertinoButton(
+      leadingContent = Button(
         child: const Text('Close'),
         padding: EdgeInsets.zero,
         onPressed: () {

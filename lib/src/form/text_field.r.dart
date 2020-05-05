@@ -14,9 +14,6 @@ enum _Slot {
   suffix,
 }
 
-const Color _kBackgroundColor = Color.fromARGB(255, 26, 26, 28);
-const Color _kDividerColor = Color.fromARGB(255, 50, 50, 54);
-
 class TextFieldRender extends RenderObjectWidget {
   const TextFieldRender({
     Key key,
@@ -42,12 +39,18 @@ class TextFieldRender extends RenderObjectWidget {
   _RenderTextField createRenderObject(BuildContext context) {
     return _RenderTextField(
       type: type,
+      dividerThickness: kDividerThickness / MediaQuery.of(context).devicePixelRatio,
+      dividerColor: Colors.divider.resolveFrom(context),
+      backgroundColor: Colors.secondarySystemGroupedBackground.resolveFrom(context),
     );
   }
 
   @override
   void updateRenderObject(BuildContext context, _RenderTextField renderObject) {
-    renderObject..type = type;
+    renderObject..type = type
+      ..dividerThickness = kDividerThickness / MediaQuery.of(context).devicePixelRatio
+      ..dividerColor = Colors.divider.resolveFrom(context)
+      ..backgroundColor = Colors.secondarySystemGroupedBackground.resolveFrom(context);
   }
 }
 
@@ -172,19 +175,53 @@ class _TextFieldElement extends RenderObjectElement {
 class _RenderTextField extends RenderBox {
   _RenderTextField({
     @required TextFieldType type,
+    @required double dividerThickness,
+    @required Color dividerColor,
+    @required Color backgroundColor,
   })  : assert(type != null),
         _type = type,
+        _dividerThickness = dividerThickness,
         _buttonBackgroundPaint = Paint()
           ..style = PaintingStyle.fill
-          ..color = _kBackgroundColor,
+          ..color = backgroundColor,
         _dividerPaint = Paint()
-          ..color = _kDividerColor
+          ..color = dividerColor
           ..style = PaintingStyle.fill;
 
   static const double _kDGap = 10.0;
 
   final Paint _buttonBackgroundPaint;
   final Paint _dividerPaint;
+
+  Color get backgroundColor => _buttonBackgroundPaint.color;
+  set backgroundColor(Color newValue) {
+    if (newValue == _buttonBackgroundPaint.color) {
+      return;
+    }
+    _buttonBackgroundPaint.color = newValue;
+    markNeedsPaint();
+  }
+
+  Color get dividerColor => _dividerPaint.color;
+  set dividerColor(Color value) {
+    if (value == _dividerPaint.color) {
+      return;
+    }
+    _dividerPaint.color = value;
+    markNeedsPaint();
+  }
+
+  double get dividerThickness => _dividerThickness;
+  double _dividerThickness;
+
+  set dividerThickness(double newValue) {
+    if (newValue == _dividerThickness) {
+      return;
+    }
+
+    _dividerThickness = newValue;
+    markNeedsLayout();
+  }
 
   final Map<_Slot, RenderBox> slotToChild = <_Slot, RenderBox>{};
   final Map<RenderBox, _Slot> childToSlot = <RenderBox, _Slot>{};
@@ -499,7 +536,6 @@ class _RenderTextField extends RenderBox {
   }
 
   void _drawButtonBackgroundsAndDividersStacked(Canvas canvas, Offset offset) {
-    final double dividerThickness = 1.0;
     final bool hasError = error != null;
 
     final Path backgroundFillPath = Path()
@@ -517,7 +553,7 @@ class _RenderTextField extends RenderBox {
 
     final Rect dividerRect = Rect.fromLTWH(
       accumulatingOffset.dx,
-      size.height + (hasError ? 14.0 : 8.0) - 1,
+      size.height + (hasError ? 14.0 : 8.0) - dividerThickness,
       size.width + 15.0,
       dividerThickness,
     );

@@ -8,7 +8,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoApp(
+    return BuskApp(
       title: 'NewsPaper',
 //      theme: BuskTheme.light(Colors.deepPurple),
 //      darkTheme: BuskTheme.dark(Colors.purple),

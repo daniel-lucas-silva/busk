@@ -12,7 +12,7 @@ const TextStyle iconStyle = TextStyle(
   package: "cupertino_icons",
   fontSize: 19.0,
   height: 1,
-  color: CupertinoColors.systemYellow,
+  color: Colors.systemYellow,
 );
 
 class SimpleIcon extends StatelessWidget {
@@ -51,13 +51,13 @@ class AddIcon extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(left: 15),
       decoration: BoxDecoration(
-        color: CupertinoColors.activeGreen.resolveFrom(context),
+        color: Colors.activeGreen.resolveFrom(context),
         shape: BoxShape.circle,
       ),
       child: Center(
         child: Icon(
           CupertinoIcons.add,
-          color: CupertinoColors.white,
+          color: Colors.white,
           size: 20,
         ),
       ),
@@ -71,13 +71,13 @@ class RmIcon extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(left: 15),
       decoration: BoxDecoration(
-        color: CupertinoColors.systemRed.resolveFrom(context),
+        color: Colors.systemRed.resolveFrom(context),
         shape: BoxShape.circle,
       ),
       child: Center(
         child: Icon(
           CupertinoIcons.minus,
-          color: CupertinoColors.white,
+          color: Colors.white,
           size: 20,
         ),
       ),

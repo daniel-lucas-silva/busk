@@ -4,7 +4,6 @@ import 'dart:ui' show lerpDouble, ImageFilter;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart' show MaterialPageRoute;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/animation.dart' show Curves;
@@ -16,10 +15,9 @@ import 'interface_level.dart';
 
 const double _kBackGestureWidth = 20.0;
 const double _kMinFlingVelocity = 1.0;
-const int _kMaxDroppedSwipePageForwardAnimationTime = 800;
 const int _kMaxPageBackAnimationTime = 300;
 
-const Color _kModalBarrierColor = CupertinoDynamicColor.withBrightness(
+const Color _kModalBarrierColor = DynamicColor.withBrightness(
   color: Color(0x33000000),
   darkColor: Color(0x7A000000),
 );
@@ -773,7 +771,7 @@ Future<T> showCupertinoModalPopup<T>({
   assert(useRootNavigator != null);
   return Navigator.of(context, rootNavigator: useRootNavigator).push(
     _CupertinoModalPopupRoute<T>(
-      barrierColor: CupertinoDynamicColor.resolve(_kModalBarrierColor, context),
+      barrierColor: DynamicColor.resolve(_kModalBarrierColor, context),
       barrierLabel: 'Dismiss',
       builder: builder,
       filter: filter,
@@ -818,7 +816,7 @@ Future<T> showCupertinoDialog<T>({
   return showGeneralDialog(
     context: context,
     barrierDismissible: false,
-    barrierColor: CupertinoDynamicColor.resolve(_kModalBarrierColor, context),
+    barrierColor: DynamicColor.resolve(_kModalBarrierColor, context),
     transitionDuration: const Duration(milliseconds: 250),
     pageBuilder: (BuildContext context, Animation<double> animation,
         Animation<double> secondaryAnimation) {

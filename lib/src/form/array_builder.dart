@@ -74,7 +74,7 @@ class _ArrayFormBuilderState<T> extends State<ArrayFormBuilder<T>> {
                 child: Icon(
                   CupertinoIcons.add_circled_solid,
                   size: 20.0,
-                  color: CupertinoColors.activeGreen,
+                  color: Colors.activeGreen,
                 ),
               ),
               child: Text(widget.labelText ?? "Adicionar"),

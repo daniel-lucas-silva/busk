@@ -1,12 +1,11 @@
 import 'dart:math' as math;
 
+import 'package:busk/theme.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
-import '../theme/colors.dart';
 import '../intl/localizations.dart';
 import '../picker.dart';
-import '../theme/theme.dart';
 
 const double _kItemExtent = 32.0;
 
@@ -18,7 +17,7 @@ const double _kDatePickerPadSize = 15.0;
 
 const double _kSqueeze = 1.25;
 
-const Color _kBackgroundColor = CupertinoColors.white;
+const Color _kBackgroundColor = Colors.white;
 
 const TextStyle _kDefaultPickerTextStyle = TextStyle(
   letterSpacing: -0.83,
@@ -39,8 +38,8 @@ TextStyle _themeTextStyle(BuildContext context, {bool isValid = true}) {
   return isValid
       ? style
       : style.copyWith(
-          color: CupertinoDynamicColor.resolve(
-              CupertinoColors.inactiveGray, context));
+          color: DynamicColor.resolve(
+              Colors.inactiveGray, context));
 }
 
 class _DatePickerLayoutDelegate extends MultiChildLayoutDelegate {

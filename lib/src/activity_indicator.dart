@@ -6,7 +6,7 @@ import 'theme/colors.dart';
 
 const double _kDefaultIndicatorRadius = 10.0;
 
-const Color kActiveTickColor = CupertinoDynamicColor.withBrightness(
+const Color kActiveTickColor = DynamicColor.withBrightness(
   color: Color(0xFF3C3C44),
   darkColor: Color(0xFFEBEBF5),
 );
@@ -73,7 +73,7 @@ class _CupertinoActivityIndicatorState extends State<CupertinoActivityIndicator>
       child: CustomPaint(
         painter: _CupertinoActivityIndicatorPainter(
           position: _controller,
-          activeColor: CupertinoDynamicColor.resolve(widget.color, context),
+          activeColor: DynamicColor.resolve(widget.color, context),
           radius: widget.radius,
         ),
       ),

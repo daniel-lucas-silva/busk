@@ -28,7 +28,7 @@ const TextStyle _kToolbarButtonFontStyle = TextStyle(
   fontSize: 14.0,
   letterSpacing: -0.15,
   fontWeight: FontWeight.w400,
-  color: CupertinoColors.white,
+  color: Colors.white,
 );
 
 const EdgeInsets _kToolbarButtonPadding =
@@ -335,7 +335,7 @@ class _TextSelectionControls extends TextSelectionControls {
         items.add(onePhysicalPixelVerticalDivider);
       }
 
-      items.add(CupertinoButton(
+      items.add(Button(
         child: Text(text, style: _kToolbarButtonFontStyle),
         color: _kToolbarBackgroundColor,
         minSize: _kToolbarHeight,

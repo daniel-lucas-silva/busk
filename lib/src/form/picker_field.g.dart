@@ -74,7 +74,7 @@ class _DialogState<T> extends State<_Dialog<T>> {
             previousPageTitle: "Voltar",
             middle: Text(widget.title),
           ),
-          SliverSection.dynamic(
+          Section.dynamic(
             header: TestSectionHeader(
               widget.description,
               height: widget.description != null ? null : 36.0,

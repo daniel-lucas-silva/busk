@@ -18,7 +18,7 @@ const double _kDatePickerPadSize = 15.0;
 
 const double _kSqueeze = 1.25;
 
-const Color _kBackgroundColor = CupertinoColors.white;
+const Color _kBackgroundColor = Colors.white;
 
 const TextStyle _kDefaultPickerTextStyle = TextStyle(
   letterSpacing: -0.83,
@@ -35,12 +35,14 @@ const double _kTimerPickerNumberLabelFontSize = 23;
 
 TextStyle _themeTextStyle(BuildContext context, {bool isValid = true}) {
   final TextStyle style =
-      CupertinoTheme.of(context).textTheme.dateTimePickerTextStyle;
+      CupertinoTheme.of(context).textTheme.dateTimePickerTextStyle.copyWith(
+        color: Colors.label.resolveFrom(context)
+      );
   return isValid
       ? style
       : style.copyWith(
-          color: CupertinoDynamicColor.resolve(
-              CupertinoColors.inactiveGray, context));
+          color: DynamicColor.resolve(Colors.inactiveGray, context),
+        );
 }
 
 class _DatePickerLayoutDelegate extends MultiChildLayoutDelegate {
@@ -396,7 +398,7 @@ class _CupertinoDatePickerDateTimeState extends State<CupertinoDatePicker> {
         selectedDayFromInitial = index;
         widget.onDateTimeChanged(_getDateTime());
       },
-      itemBuilder: (BuildContext context, int index) {
+      itemBuilder: (BuildContext _, int index) {
         final DateTime dateTime = DateTime(
           initialDateTime.year,
           initialDateTime.month,

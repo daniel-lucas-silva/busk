@@ -6,11 +6,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/rendering.dart';
 
+import '../../theme.dart';
 import '../text_selection.dart';
 import '../feedback.dart';
 import '../theme/colors.dart';
 import '../utils/extensions.dart';
 import '../icons.dart';
+import '../constants.dart';
 
 import '_changeable_field.dart';
 
@@ -363,8 +365,10 @@ class _TextFieldState extends State<_TextField>
       return Text(
         widget.decoration.placeholder,
         textAlign: widget.settings.textAlign,
-        style:
-            _kStyle.copyWith(color: CupertinoColors.placeholderText.darkColor),
+        style: CupertinoTheme.of(context)
+            .textTheme
+            .body
+            .copyWith(color: Colors.placeholderText.darkColor),
       );
     return null;
   }
@@ -372,15 +376,17 @@ class _TextFieldState extends State<_TextField>
   Widget _getPrefix(TextEditingValue text, [bool hasError = false]) {
     if (_showPrefixWidget(text)) {
       final bool hasFocus = _effectiveFocusNode.hasFocus;
-      Color color = hasFocus ? _kPrimary : _kPrimaryLabel;
-      color = widget.enabled ? color : _kSecondaryLabel;
+      Color color = hasFocus ? CupertinoTheme.of(context).primaryColor : Colors.label.resolveFrom(context);
+      color = widget.enabled ? color : Colors.secondaryLabel.resolveFrom(context);
 
       return IconTheme(
         data: IconThemeData(size: 24.0, color: color),
         child: DefaultTextStyle(
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
-          style: _kStyle.copyWith(color: color),
+          style: CupertinoTheme.of(context)
+              .textTheme
+              .body.copyWith(color: color),
           child: widget.decoration.prefix,
         ),
       );
@@ -392,11 +398,13 @@ class _TextFieldState extends State<_TextField>
   Widget _getSuffix(TextEditingValue text) {
     if (_showSuffixWidget(text)) {
       return IconTheme(
-        data: IconThemeData(size: 24.0, color: _kSecondaryLabel),
+        data: IconThemeData(size: 24.0, color: Colors.secondaryLabel.resolveFrom(context)),
         child: DefaultTextStyle(
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
-          style: _kStyle.copyWith(color: _kSecondaryLabel),
+          style: CupertinoTheme.of(context)
+              .textTheme
+              .body.copyWith(color: Colors.secondaryLabel.resolveFrom(context)),
           child: widget.decoration.suffix,
         ),
       );
@@ -474,7 +482,7 @@ class _TextFieldState extends State<_TextField>
         keyboardType: widget.settings.keyboardType,
         textInputAction: widget.settings.textInputAction,
         textCapitalization: widget.settings.textCapitalization,
-        style: _kStyle,
+        style: CupertinoTheme.of(context).textTheme.body,
         strutStyle: widget.strutStyle,
         textAlign: widget.settings.textAlign,
         textDirection: TextDirection.ltr,
@@ -487,7 +495,8 @@ class _TextFieldState extends State<_TextField>
         maxLines: widget.settings.maxLines,
         minLines: widget.settings.minLines,
         expands: widget.settings.expands,
-        selectionColor: _kPrimary.withOpacity(0.2),
+        selectionColor: CupertinoTheme.of(context)
+            .primaryColor.withOpacity(0.2),
         selectionControls:
             widget.selectionEnabled ? textSelectionControls : null,
         onChanged: widget.actions.onChanged,
@@ -499,11 +508,12 @@ class _TextFieldState extends State<_TextField>
         rendererIgnoresPointer: true,
         cursorWidth: widget.settings.cursorWidth,
         cursorRadius: cursorRadius,
-        cursorColor: _kPrimary,
+        cursorColor: CupertinoTheme.of(context)
+            .primaryColor,
         cursorOpacityAnimates: cursorOpacityAnimates,
         cursorOffset: cursorOffset,
         paintCursorAboveText: paintCursorAboveText,
-        backgroundCursorColor: _kInactive,
+        backgroundCursorColor: Colors.inactiveGray.resolveFrom(context),
         scrollPadding: widget.behavior.scrollPadding,
         keyboardAppearance: keyboardAppearance,
         enableInteractiveSelection: widget.behavior.enableInteractiveSelection,

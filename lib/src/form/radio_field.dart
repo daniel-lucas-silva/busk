@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 
-import '../table_view/section.dart';
 import '../table_view/cell.dart';
 import '_changeable_field.dart';
 
@@ -27,12 +26,7 @@ class RadioFormField<T> extends FormField<T> implements ChangeableField<T> {
           builder: (FormFieldState<T> field) {
             var currentValue = field.value ?? initialValue;
 
-            return Section(
-              header: TestSectionHeader(label),
-              description: TestSectionDescription(
-                field.errorText ?? description,
-                isError: field.errorText != null,
-              ),
+            return Column(
               children: items.keys.map((i) {
                 return Cell(
                   child: Text(items[i]),

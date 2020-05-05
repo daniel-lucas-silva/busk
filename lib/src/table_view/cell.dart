@@ -13,6 +13,7 @@ import '../utils/extensions.dart';
 import '../rating_bar.dart';
 import '../theme/colors.dart';
 import '../theme/theme.dart';
+import '../constants.dart';
 
 export 'package:flutter/services.dart'
     show
@@ -23,7 +24,9 @@ export 'package:flutter/services.dart'
         SmartDashesType;
 
 part 'cell.styles.dart';
+
 part 'cell.render.dart';
+
 part 'cell.widgets.dart';
 
 enum CellType {
@@ -233,16 +236,25 @@ class Cell extends RawCell {
       Cell._(
         key: key,
         title: Text(message, overflow: TextOverflow.visible),
-        subtitle: RichText(
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          text: TextSpan(
-              style: _kSubheadlineStyle.copyWith(height: 1.0),
-              children: [
-                TextSpan(text: name),
-                _spaceSpan,
-                TextSpan(text: time),
-              ]),
+        subtitle: Builder(
+          builder: (context) {
+            final textTheme = CupertinoTheme.of(context).textTheme;
+            
+            return RichText(
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              text: TextSpan(
+                style: textTheme.subhead.copyWith(
+                  color: Colors.secondaryLabel.resolveFrom(context),
+                ),
+                children: [
+                  TextSpan(text: name),
+                  _spaceSpan,
+                  TextSpan(text: time),
+                ],
+              ),
+            );
+          }
         ),
         text: null,
         after: null,
@@ -250,7 +262,10 @@ class Cell extends RawCell {
           itemCount: 5,
           rating: rate ?? 0,
           itemSize: 14,
-          itemBuilder: (context, i) => Icon(CupertinoIcons.star_filled),
+          itemBuilder: (context, i) => SimpleIcon(
+            CupertinoIcons.star_filled,
+            color: Colors.systemYellow.resolveFrom(context),
+          ),
         ),
         trailing: avatar,
         type: CellType.REVIEW,
@@ -303,33 +318,45 @@ class Cell extends RawCell {
   }) =>
       Cell._(
         key: key,
-        title: DefaultTextStyle(
-          textAlign: center ? TextAlign.center : TextAlign.left,
-          style: _kTitleStyle.copyWith(
-            color: onTap != null
-                ? (destructive ? _kDanger : _kPrimary)
-                : _kSecondaryLabel,
-            height: 1.0,
-          ),
-          child: child,
-        ),
+        title: Builder(builder: (context) {
+          final textTheme = CupertinoTheme.of(context).textTheme;
+
+          return DefaultTextStyle(
+            textAlign: center ? TextAlign.center : TextAlign.left,
+            style: textTheme.body.copyWith(
+              color: onTap != null
+                  ? (destructive
+                      ? _kDanger
+                      : CupertinoTheme.of(context).primaryColor)
+                  : Colors.secondaryLabel.resolveFrom(context),
+              height: 1.0,
+            ),
+            child: child,
+          );
+        }),
         subtitle: null,
         text: null,
         after: null,
         leading: null,
         trailing: icon == null
             ? null
-            : Container(
-                decoration: BoxDecoration(
-                  color: Color(0xFF444444),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  icon,
-                  color: destructive ? _kDanger : _kPrimary,
-                  size: 22,
-                ),
-              ),
+            : Builder(
+              builder: (context) {
+                return Container(
+                    decoration: BoxDecoration(
+                      color: Colors.tertiarySystemFill.resolveFrom(context),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      icon,
+                      color: destructive
+                          ? _kDanger
+                          : CupertinoTheme.of(context).primaryColor,
+                      size: 22,
+                    ),
+                  );
+              }
+            ),
         type: CellType.ACTION,
         onTap: onTap,
         onLongPress: onLongPress,
@@ -448,74 +475,91 @@ class RawCell extends StatelessWidget {
     @required this.disclosure,
   }) : super(key: key);
 
-  void _handleTap(BuildContext context) {
-    if (onTap != null) {
-      Feedback.forTap(context);
-      onTap();
-    }
-  }
+  TextStyle _titleTextStyle(BuildContext context) {
+    final textTheme = CupertinoTheme.of(context).textTheme;
 
-  void _handleLongPress(BuildContext context) {
-    if (onLongPress != null) {
-      Feedback.forLongPress(context);
-      onLongPress();
-    }
-  }
+    final defaultTextStyle = textTheme.body.copyWith(
+      height: 1,
+    );
 
-  TextStyle get _titleTextStyle {
     switch (type) {
       case CellType.MESSAGE:
-        return _kTitleStyle.copyWith(fontWeight: FontWeight.w600);
+        return defaultTextStyle.copyWith(fontWeight: FontWeight.w600);
       case CellType.DETAIL:
-        return _kSubheadlineStyle;
+        return textTheme.subhead.copyWith(
+          color: Colors.secondaryLabel.resolveFrom(context),
+        );
       case CellType.REVIEW:
-        return _kTitleStyle.copyWith(height: 1.1);
+        return textTheme.body.copyWith(height: 1.1);
       default:
-        return _kTitleStyle;
+        return defaultTextStyle;
     }
   }
 
-  TextStyle get _subtitleTextStyle {
+  TextStyle _subtitleTextStyle(BuildContext context) {
+    final textTheme = CupertinoTheme.of(context).textTheme;
     switch (type) {
       case CellType.DEFAULT:
-        return _kSubtitleStyle;
+        return textTheme.caption1.copyWith(
+          color: Colors.inactiveGray.resolveFrom(context),
+        );
       case CellType.SUBTITLE:
-        return _kSubtitleStyle;
+        return textTheme.caption1.copyWith(
+          color: Colors.inactiveGray.resolveFrom(context),
+          height: 1.0,
+        );
       case CellType.MESSAGE:
-        return _kSubheadlineStyle;
+        return textTheme.subhead.copyWith(
+          color: Colors.secondaryLabel.resolveFrom(context),
+        );
       case CellType.MAIL:
-        return _kSubheadlineStyle.copyWith(color: _kPrimaryLabel);
+        return textTheme.subhead;
       case CellType.DETAIL:
-        return _kTitleStyle.copyWith(height: 1.25);
+        return textTheme.body.copyWith(height: 1.25);
       case CellType.REVIEW:
-        return _kSubheadlineStyle;
-      default:
-        return _kSubtitleStyle;
-    }
-  }
-
-  TextStyle get _textTextStyle {
-    switch (type) {
-      case CellType.DETAIL:
-        return _kTitleStyle;
-      default:
-        return _kSubheadlineStyle;
-    }
-  }
-
-  TextStyle get _afterTextStyle {
-    switch (type) {
-      case CellType.MESSAGE:
-        return _kSubheadlineStyle;
-      case CellType.MAIL:
-        return _kSubheadlineStyle;
-      case CellType.DETAIL:
-        return _kSubheadlineStyle.copyWith(
-          color: _kPrimary,
+        return textTheme.subhead.copyWith(
+          color: Colors.secondaryLabel.resolveFrom(context),
         );
       default:
-        return _kTitleStyle.copyWith(
-          color: _kSecondaryLabel,
+        return textTheme.caption1.copyWith(
+          color: Colors.inactiveGray.resolveFrom(context),
+          height: 1.0,
+        );
+    }
+  }
+
+  TextStyle _textTextStyle(BuildContext context) {
+    final textTheme = CupertinoTheme.of(context).textTheme;
+
+    switch (type) {
+      case CellType.DETAIL:
+        return textTheme.body;
+      default:
+        return textTheme.subhead.copyWith(
+          color: Colors.secondaryLabel.resolveFrom(context),
+        );
+    }
+  }
+
+  TextStyle _afterTextStyle(BuildContext context) {
+    final textTheme = CupertinoTheme.of(context).textTheme;
+
+    switch (type) {
+      case CellType.MESSAGE:
+        return textTheme.subhead.copyWith(
+          color: Colors.secondaryLabel.resolveFrom(context),
+        );
+      case CellType.MAIL:
+        return textTheme.subhead.copyWith(
+          color: Colors.secondaryLabel.resolveFrom(context),
+        );
+      case CellType.DETAIL:
+        return textTheme.subhead.copyWith(
+          color: CupertinoTheme.of(context).primaryColor,
+        );
+      default:
+        return textTheme.body.copyWith(
+          color: Colors.secondaryLabel.resolveFrom(context),
         );
     }
   }
@@ -541,8 +585,8 @@ class RawCell extends StatelessWidget {
             else if (_disclosure)
               IconSpan(
                 CupertinoIcons.right_chevron,
-                size: 20,
-                color: CupertinoColors.separator.resolveFrom(context),
+                size: 17,
+                color: Colors.disclosure.resolveFrom(context),
                 bolder: true,
               ),
           ],
@@ -559,7 +603,7 @@ class RawCell extends StatelessWidget {
     if (title != null) {
       titleWidget = DefaultTextStyle(
         overflow: TextOverflow.ellipsis,
-        style: _titleTextStyle,
+        style: _titleTextStyle(context),
         child: title,
       );
     }
@@ -568,7 +612,7 @@ class RawCell extends StatelessWidget {
     if (subtitle != null) {
       subtitleWidget = DefaultTextStyle(
         overflow: TextOverflow.ellipsis,
-        style: _subtitleTextStyle,
+        style: _subtitleTextStyle(context),
         child: subtitle,
       );
     }
@@ -577,7 +621,7 @@ class RawCell extends StatelessWidget {
     if (text != null) {
       textWidget = DefaultTextStyle(
         overflow: TextOverflow.ellipsis,
-        style: _textTextStyle,
+        style: _textTextStyle(context),
         child: text,
       );
     }
@@ -588,7 +632,7 @@ class RawCell extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
         maxLines: 1,
         textAlign: TextAlign.right,
-        style: _afterTextStyle,
+        style: _afterTextStyle(context),
         child: after,
       );
     }
@@ -599,7 +643,9 @@ class RawCell extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
         maxLines: 1,
         textAlign: TextAlign.right,
-        style: _kTitleStyle.copyWith(color: _kSecondaryLabel),
+        style: CupertinoTheme.of(context).textTheme.body.copyWith(
+              color: Colors.secondaryLabel.resolveFrom(context),
+            ),
         child: trailing,
       );
     }
@@ -669,7 +715,6 @@ class _Tappable extends StatefulWidget {
 }
 
 class _TappableState extends State<_Tappable> {
-
   Timer _timer;
 
   bool isPressed = false;
@@ -683,9 +728,9 @@ class _TappableState extends State<_Tappable> {
 
   @override
   void didUpdateWidget(_Tappable oldWidget) {
-    if(_timer?.isActive ?? false) {
+    if (_timer?.isActive ?? false) {
       _timer.cancel();
-      if(isPressed) isPressed = false;
+      if (isPressed) isPressed = false;
     }
     super.didUpdateWidget(oldWidget);
   }

@@ -15,3 +15,4 @@
 ///  * [kMinInteractiveDimension]
 ///  * <https://developer.apple.com/ios/human-interface-guidelines/visual-design/adaptivity-and-layout/>
 const double kMinInteractiveDimensionCupertino = 44.0;
+const double kDividerThickness = 1.6;
