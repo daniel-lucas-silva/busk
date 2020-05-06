@@ -102,6 +102,7 @@ class _TabScaffoldState extends State<TabScaffold> {
           Expanded(
             child: PageView.builder(
               controller: _controller,
+              physics: NeverScrollableScrollPhysics(),
               itemCount: widget.items.length,
               itemBuilder: (context, index) {
                 return widget.builder(
