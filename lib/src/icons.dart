@@ -182,8 +182,11 @@ class CupertinoIcons {
       IconData(0xf4c6, fontFamily: iconFont, fontPackage: iconFontPackage);
 
   /// A chat bubble.
-  static const IconData conversation_bubble =
+  static const IconData chat =
       IconData(0xf3fb, fontFamily: iconFont, fontPackage: iconFontPackage);
+
+  static const IconData chat_solid =
+  IconData(0xf3fc, fontFamily: iconFont, fontPackage: iconFontPackage);
 
   /// A person's silhouette in a circle.
   static const IconData profile_circled =
