@@ -31,7 +31,7 @@ const TextStyle _kDefaultTitle2TextStyle = TextStyle(
   fontFamily: '.SF Pro Display',
   fontSize: 22.0,
   letterSpacing: 0.35,
-  fontWeight: FontWeight.w400,
+  fontWeight: FontWeight.w600,
   color: Colors.label,
   decoration: TextDecoration.none,
 );
@@ -41,7 +41,7 @@ const TextStyle _kDefaultTitle3TextStyle = TextStyle(
   fontFamily: '.SF Pro Display',
   fontSize: 20.0,
   letterSpacing: 0.38,
-  fontWeight: FontWeight.w400,
+  fontWeight: FontWeight.w600,
   color: Colors.label,
   decoration: TextDecoration.none,
 );

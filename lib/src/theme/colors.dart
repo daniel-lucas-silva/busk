@@ -15,6 +15,7 @@ class Colors {
 
   static const Color white = Color(0xFFFFFFFF);
   static const Color black = Color(0xFF000000);
+  static const Color transparent = Color(0x00000000);
   static const Color lightBackgroundGray = Color(0xFFE5E5EA);
   static const Color extraLightBackgroundGray = Color(0xFFEFEFF4);
   static const Color darkBackgroundGray = Color(0xFF171717);

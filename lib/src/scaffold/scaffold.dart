@@ -99,21 +99,24 @@ class _TabScaffoldState extends State<TabScaffold> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Expanded(
-            child: PageView.builder(
-              controller: _controller,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: widget.items.length,
-              itemBuilder: (context, index) {
-                return widget.builder(
-                  context,
-                  index,
-                  widget.items[index].child,
-                );
-              },
+          DefaultTextStyle(
+            style: CupertinoTheme.of(context).textTheme.body,
+            child: Expanded(
+              child: PageView.builder(
+                controller: _controller,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: widget.items.length,
+                itemBuilder: (context, index) {
+                  return widget.builder(
+                    context,
+                    index,
+                    widget.items[index].child,
+                  );
+                },
+              ),
             ),
           ),
-          TabBar(
+          BottomTabBar(
             items: widget.items.map<TabBarItem>((item) {
               return TabBarItem(
                 icon: item.icon != null ? Icon(item.icon) : null,

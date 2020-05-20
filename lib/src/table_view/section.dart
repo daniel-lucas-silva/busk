@@ -109,7 +109,7 @@ class _BuildDelegate extends SliverChildDelegate {
   Widget buildFooter(BuildContext context) {
     Widget content;
 
-    if (footer is Text)
+    if (footer is Text || footer is Row)
       content = DefaultTextStyle(
         style: CupertinoTheme.of(context).textTheme.footnote,
         child: Container(
@@ -124,6 +124,8 @@ class _BuildDelegate extends SliverChildDelegate {
           child: footer,
         ),
       );
+    else if(footer != null)
+      content = footer;
     else
       content = SizedBox(height: 10.0);
 
@@ -150,7 +152,7 @@ class _BuildDelegate extends SliverChildDelegate {
 
   Widget buildHeader(BuildContext context) {
     Widget content;
-    if (header is Text)
+    if (header is Text || header is Row)
       content = DefaultTextStyle(
         style: CupertinoTheme.of(context).textTheme.footnote,
         child: Container(
@@ -165,6 +167,8 @@ class _BuildDelegate extends SliverChildDelegate {
           child: header,
         ),
       );
+    else if(header != null)
+      content = header;
     else
       content = SizedBox(height: 36.0);
 
