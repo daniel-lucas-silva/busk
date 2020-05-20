@@ -44,9 +44,9 @@ class TabItem {
   final Widget child;
 }
 
-class TabBar extends StatelessWidget implements PreferredSizeWidget {
+class BottomTabBar extends StatelessWidget implements PreferredSizeWidget {
   /// Creates a tab bar in the iOS style.
-  const TabBar({
+  const BottomTabBar({
     Key key,
     @required this.items,
     this.onTap,
@@ -195,9 +195,9 @@ class TabBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  /// Create a clone of the current [TabBar] but with provided
+  /// Create a clone of the current [BottomTabBar] but with provided
   /// parameters overridden.
-  TabBar copyWith({
+  BottomTabBar copyWith({
     Key key,
     List<TabBarItem> items,
     Color backgroundColor,
@@ -208,7 +208,7 @@ class TabBar extends StatelessWidget implements PreferredSizeWidget {
     int currentIndex,
     ValueChanged<int> onTap,
   }) {
-    return TabBar(
+    return BottomTabBar(
       key: key ?? this.key,
       items: items ?? this.items,
       backgroundColor: backgroundColor ?? this.backgroundColor,
