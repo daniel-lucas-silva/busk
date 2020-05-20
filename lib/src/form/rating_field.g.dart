@@ -22,7 +22,7 @@ class RatingSettings {
     this.textDirection,
     this.icon: const SimpleIcon(
       CupertinoIcons.star_filled,
-      color: CupertinoColors.systemYellow,
+      color: Colors.systemYellow,
     ),
     this.direction = Axis.horizontal,
     this.unratedColor,

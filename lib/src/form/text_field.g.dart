@@ -321,20 +321,8 @@ class _SelectionDetectorBuilder extends TextSelectionGestureDetectorBuilder {
   }
 }
 
-const Color _kPrimaryLabel = Color.fromRGBO(255, 255, 255, 1.0);
-const Color _kSecondaryLabel = Color.fromRGBO(235, 235, 245, 0.6);
-const Color _kPrimary = Color(0xFFFBC02D);
-const Color _kInactive = Color(0xFF757575);
-const Color _kDanger = Color(0xFFFD5739);
 
-const TextStyle _kStyle = TextStyle(
-  inherit: false,
-  fontFamily: '.SF Pro Text',
-  fontSize: 17.0,
-  letterSpacing: -0.41,
-  fontWeight: FontWeight.w400,
-  color: _kPrimaryLabel,
-);
+const Color _kDanger = Color(0xFFFD5739);
 
 const TextStyle _kErrorStyle = TextStyle(
   inherit: false,

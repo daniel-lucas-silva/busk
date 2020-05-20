@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/widgets.dart';
 
 extension MapExtension on Map {
@@ -47,7 +48,8 @@ extension DateExtension on DateTime {
 
   String toDDMMYYYY() => DateFormat.yMd('pt_BR').format(this);
 
-  String format([String pattern]) => DateFormat(pattern ?? 'dd/MM/yyyy  HH:mm:ss', 'pt_BR').format(this);
+  String format([String pattern]) =>
+      DateFormat(pattern ?? 'dd/MM/yyyy  HH:mm:ss', 'pt_BR').format(this);
 }
 
 extension StringExtension on String {
@@ -56,13 +58,18 @@ extension StringExtension on String {
   Text toText([String or, TextStyle style]) => (this == null || this.isEmpty)
       ? (or == null || or.isEmpty) ? null : Text(or, style: style)
       : Text(this, style: style);
+
+  ImageProvider toImageOrAsset(String value) =>
+      (this != null && this.isNotEmpty)
+          ? CachedNetworkImageProvider(this)
+          : AssetImage(value);
 }
 
 extension IterableExtension on Iterable {
   T firstOr<T>(T value) => this.isEmpty ? value : this;
 
   T elementAtOrNull<T>(int index, [T optional]) {
-    if(this.isEmpty) return optional;
+    if (this.isEmpty) return optional;
 
     int elementIndex = 0;
     for (T element in this) {

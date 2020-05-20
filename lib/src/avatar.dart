@@ -92,7 +92,7 @@ class Avatar extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 4, vertical: 1),
               decoration: BoxDecoration(
-                color: CupertinoColors.systemRed,
+                color: Colors.systemRed,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: DefaultTextStyle(

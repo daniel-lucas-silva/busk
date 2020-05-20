@@ -5,7 +5,10 @@ export 'theme.dart';
 export 'tiles.dart';
 export 'utils.dart';
 
-export 'src/action_sheet.dart';
+export 'src/raw/raw_button.dart';
+export 'src/test_button.dart';
+export 'src/slivers.dart';
+
 export 'src/activity_indicator.dart';
 export 'src/avatar.dart';
 export 'src/button.dart';
@@ -27,10 +30,13 @@ export 'src/text_field.dart';
 export 'src/text_selection.dart';
 export 'src/thumb_painter.dart';
 export 'src/tooltip.dart';
+export 'src/status.dart';
 
 export 'package:flutter/widgets.dart';
 export 'package:flutter/services.dart';
 export 'package:flutter/gestures.dart';
+export 'package:intl/intl.dart' hide TextDirection;
+export 'package:intl/date_symbol_data_local.dart';
 
 export 'src/link.dart';
 export 'src/themes.dart';

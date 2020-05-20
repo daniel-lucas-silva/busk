@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/busk.iml" filepath="$PROJECT_DIR$/busk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/examples/itaperuna/itaperuna.iml" filepath="$PROJECT_DIR$/examples/itaperuna/itaperuna.iml" />
     </modules>
   </component>
 </project>

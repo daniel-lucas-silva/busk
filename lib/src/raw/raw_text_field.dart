@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:busk/src/theme/colors.dart';
+import 'package:busk/theme.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -594,7 +594,7 @@ class _TextFieldState extends State<_TextField>
         widget.decoration.placeholder,
         textAlign: widget.settings.textAlign,
         style:
-        _kStyle.copyWith(color: CupertinoColors.placeholderText.darkColor),
+        _kStyle.copyWith(color: Colors.placeholderText.darkColor),
       );
     return null;
   }

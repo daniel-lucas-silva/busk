@@ -22,7 +22,7 @@ class CupertinoIconThemeData extends IconThemeData with DiagnosticableMixin {
   /// Called by [IconTheme.of] to resolve [color] against the given [BuildContext].
   @override
   IconThemeData resolve(BuildContext context) {
-    final Color resolvedColor = CupertinoDynamicColor.resolve(color, context);
+    final Color resolvedColor = DynamicColor.resolve(color, context);
     return resolvedColor == color ? this : copyWith(color: resolvedColor);
   }
 

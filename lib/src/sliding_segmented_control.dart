@@ -29,7 +29,7 @@ const double kMinSegmentedControlHeight = 28.0;
 
 const Color _kSeparatorColor = Color(0x4D8E8E93);
 
-const CupertinoDynamicColor _kThumbColor = CupertinoDynamicColor.withBrightness(
+const DynamicColor _kThumbColor = DynamicColor.withBrightness(
   color: Color(0xFFFFFFFF),
   darkColor: Color(0xFF636366),
 );
@@ -142,7 +142,7 @@ class CupertinoSlidingSegmentedControl<T> extends StatefulWidget {
     this.groupValue,
     this.thumbColor = _kThumbColor,
     this.padding = _kHorizontalItemPadding,
-    this.backgroundColor = CupertinoColors.tertiarySystemFill,
+    this.backgroundColor = Colors.tertiarySystemFill,
   }) : assert(children != null),
         assert(children.length >= 2),
         assert(padding != null),
@@ -215,14 +215,14 @@ class CupertinoSlidingSegmentedControl<T> extends StatefulWidget {
 
   /// The color used to paint the rounded rect behind the [children] and the separators.
   ///
-  /// The default value is [CupertinoColors.tertiarySystemFill]. The background
+  /// The default value is [Colors.tertiarySystemFill]. The background
   /// will not be painted if null is specified.
   final Color backgroundColor;
 
   /// The color used to paint the interior of the thumb that appears behind the
   /// currently selected item.
   ///
-  /// The default value is a [CupertinoDynamicColor] that appears white in light
+  /// The default value is a [DynamicColor] that appears white in light
   /// mode and becomes a gray color in dark mode.
   final Color thumbColor;
 
@@ -444,7 +444,7 @@ class _SegmentedControlState<T> extends State<CupertinoSlidingSegmentedControl<T
         final Widget box = _SegmentedControlRenderWidget<T>(
           children: children,
           selectedIndex: selectedIndex,
-          thumbColor: CupertinoDynamicColor.resolve(widget.thumbColor, context),
+          thumbColor: DynamicColor.resolve(widget.thumbColor, context),
           state: this,
         );
 
@@ -454,7 +454,7 @@ class _SegmentedControlState<T> extends State<CupertinoSlidingSegmentedControl<T
             padding: widget.padding.resolve(Directionality.of(context)),
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.all(Radius.circular(_kCornerRadius)),
-              color: CupertinoDynamicColor.resolve(widget.backgroundColor, context),
+              color: DynamicColor.resolve(widget.backgroundColor, context),
             ),
             child: box,
           ),
@@ -481,7 +481,7 @@ class _SegmentedControlRenderWidget<T> extends MultiChildRenderObjectWidget {
   RenderObject createRenderObject(BuildContext context) {
     return _RenderSegmentedControl<T>(
       selectedIndex: selectedIndex,
-      thumbColor: CupertinoDynamicColor.resolve(thumbColor, context),
+      thumbColor: DynamicColor.resolve(thumbColor, context),
       state: state,
     );
   }
@@ -489,7 +489,7 @@ class _SegmentedControlRenderWidget<T> extends MultiChildRenderObjectWidget {
   @override
   void updateRenderObject(BuildContext context, _RenderSegmentedControl<T> renderObject) {
     renderObject
-      ..thumbColor = CupertinoDynamicColor.resolve(thumbColor, context)
+      ..thumbColor = DynamicColor.resolve(thumbColor, context)
       ..guardedSetHighlightedIndex(selectedIndex);
   }
 }

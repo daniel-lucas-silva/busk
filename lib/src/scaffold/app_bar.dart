@@ -71,21 +71,15 @@ Widget _wrapWithBackground({
 }) {
   Widget result = child;
   if (updateSystemUiOverlay) {
-    final bool isDark = backgroundColor.computeLuminance() < 0.179;
-    final Brightness newBrightness =
-        brightness ?? (isDark ? Brightness.dark : Brightness.light);
-    SystemUiOverlayStyle overlayStyle;
-    switch (newBrightness) {
-      case Brightness.dark:
-        overlayStyle = SystemUiOverlayStyle.light;
-        break;
-      case Brightness.light:
-      default:
-        overlayStyle = SystemUiOverlayStyle.dark;
-        break;
-    }
+    final bool darkBackground = backgroundColor.computeLuminance() < 0.179;
+    final Brightness brightness =
+        darkBackground ? Brightness.light : Brightness.dark;
     result = AnnotatedRegion<SystemUiOverlayStyle>(
-      value: overlayStyle,
+      value: SystemUiOverlayStyle(
+        statusBarColor: Color(0x00000000),
+        statusBarIconBrightness: brightness,
+        statusBarBrightness: brightness,
+      ),
       sized: true,
       child: result,
     );
@@ -141,6 +135,7 @@ class SliverAppBar extends StatefulWidget {
     this.brightness,
     this.padding,
     this.transitionBetweenRoutes = true,
+    this.largeTransparent = false,
     this.heroTag = _defaultHeroTag,
   })  : assert(automaticallyImplyLeading != null),
         assert(automaticallyImplyTitle != null),
@@ -159,6 +154,7 @@ class SliverAppBar extends StatefulWidget {
   final EdgeInsetsDirectional padding;
   final Border border;
   final bool transitionBetweenRoutes;
+  final bool largeTransparent;
   final Object heroTag;
 
 //  bool get opaque => backgroundColor.alpha == 0xFF;
@@ -217,6 +213,7 @@ class _SliverAppBarState extends State<SliverAppBar> {
                 _kNavBarPersistentHeight + MediaQuery.of(context).padding.top,
             alwaysShowMiddle: widget.middle != null,
             isLarge: widget.largeTitle != null,
+            largeTransparent: widget.largeTransparent,
           ),
         ),
       ),
@@ -240,6 +237,7 @@ class _LargeTitleNavigationBarSliverDelegate
     @required this.persistentHeight,
     @required this.alwaysShowMiddle,
     @required this.isLarge: false,
+    @required this.largeTransparent: false,
   })  : assert(persistentHeight != null),
         assert(alwaysShowMiddle != null),
         assert(transitionBetweenRoutes != null);
@@ -257,6 +255,7 @@ class _LargeTitleNavigationBarSliverDelegate
   final double persistentHeight;
   final bool alwaysShowMiddle;
   final bool isLarge;
+  final bool largeTransparent;
 
   @override
   double get minExtent => persistentHeight;
@@ -269,12 +268,22 @@ class _LargeTitleNavigationBarSliverDelegate
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    double percent() {
+      final max = maxExtent - minExtent;
+      final size = math.min(shrinkOffset, maxExtent - minExtent);
+
+      return _map(size, 0, max, 0.0, 1.0);
+    }
+
     final bool showLargeTitle =
         shrinkOffset < maxExtent - minExtent - _kNavBarShowLargeTitleThreshold;
 
     final textTheme = CupertinoTheme.of(context).textTheme;
-    final bgColor = CupertinoDynamicColor.resolve(backgroundColor, context);
+    final bgColor = DynamicColor.resolve(backgroundColor, context);
 
     final _PersistentNavigationBar persistentNavigationBar =
         _PersistentNavigationBar(
@@ -285,7 +294,7 @@ class _LargeTitleNavigationBarSliverDelegate
 
     final Widget navBar = _wrapWithBackground(
       border: border,
-      backgroundColor: bgColor,
+      backgroundColor: bgColor.withOpacity(!largeTransparent ? 1 : percent()),
       brightness: brightness,
       child: DefaultTextStyle(
         style: CupertinoTheme.of(context).textTheme.textStyle,
@@ -319,7 +328,7 @@ class _LargeTitleNavigationBarSliverDelegate
                             child: DefaultTextStyle(
                               style: CupertinoTheme.of(context)
                                   .textTheme
-                                  .navLargeTitleTextStyle,
+                                  .largeTitle,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               child: components.largeTitle,
@@ -357,9 +366,11 @@ class _LargeTitleNavigationBarSliverDelegate
       child: _TransitionableNavigationBar(
         componentsKeys: keys,
         backgroundColor: bgColor,
-        backButtonTextStyle: textTheme.navActionTextStyle,
-        titleTextStyle: textTheme.navTitleTextStyle,
-        largeTitleTextStyle: textTheme.navLargeTitleTextStyle,
+        backButtonTextStyle: textTheme.body.copyWith(
+          color: CupertinoTheme.of(context).primaryColor,
+        ),
+        titleTextStyle: textTheme.body,
+        largeTitleTextStyle: textTheme.largeTitle,
         border: border,
         hasUserMiddle: userMiddle != null,
         largeExpanded: showLargeTitle,
@@ -403,7 +414,7 @@ class _PersistentNavigationBar extends StatelessWidget {
 
     if (middle != null) {
       middle = DefaultTextStyle(
-        style: CupertinoTheme.of(context).textTheme.navTitleTextStyle,
+        style: CupertinoTheme.of(context).textTheme.body,
         child: Semantics(header: true, child: middle),
       );
 
@@ -560,7 +571,7 @@ class _NavigationBarStaticComponents {
         route is PageRoute &&
         route.canPop &&
         route.fullscreenDialog) {
-      leadingContent = CupertinoButton(
+      leadingContent = Button(
         child: const Text('Close'),
         padding: EdgeInsets.zero,
         onPressed: () {
@@ -863,4 +874,14 @@ class _NavigationBarTransition extends StatelessWidget {
       ),
     );
   }
+}
+
+double _norm(double value, double min, double max) =>
+    (value - min) / (max - min);
+
+double _lerp(double norm, num min, num max) => (max - min) * norm + min;
+
+double _map(double value, double sourceMin, double sourceMax, double destMin,
+    double destMax) {
+  return _lerp(_norm(value, sourceMin, sourceMax), destMin, destMax);
 }

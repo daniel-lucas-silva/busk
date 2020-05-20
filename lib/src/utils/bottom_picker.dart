@@ -42,7 +42,7 @@ class BottomPicker extends StatelessWidget {
                   height: _kPickerToolbarHeight,
                   child: NavigationToolbar(
                     leading: Offstage(),
-                    trailing: CupertinoButton(
+                    trailing: Button(
                       child: Text(selectText ?? "Selecionar"),
                       padding: EdgeInsets.symmetric(horizontal: 15),
                       onPressed: onSelect,

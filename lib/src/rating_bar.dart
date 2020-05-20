@@ -2,7 +2,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 import 'theme/colors.dart';
-import 'theme/theme.dart';
 import 'feedback.dart';
 
 class RatingWidget {
@@ -146,7 +145,7 @@ class _ColorFilter extends StatelessWidget {
       ),
       child: ColorFiltered(
         colorFilter: ColorFilter.mode(
-          CupertinoColors.white,
+          Colors.white,
           BlendMode.srcATop,
         ),
         child: child,
@@ -287,7 +286,7 @@ class _RatingBarIndicatorState extends State<RatingBarIndicator> {
                     ? widget.itemBuilder(context, index)
                     : _ColorFilter(
                         color:
-                            widget.unratedColor ?? CupertinoColors.inactiveGray,
+                            widget.unratedColor ?? Colors.inactiveGray,
                         child: widget.itemBuilder(context, index),
                       ),
               ),
@@ -403,7 +402,7 @@ class _RatingBarState extends State<RatingBar> {
         size: widget.itemSize,
         child: widget.ratingWidget?.empty ?? widget.itemBuilder(context, index),
         enableMask: widget.ratingWidget == null,
-        unratedColor: widget.unratedColor ?? CupertinoColors.inactiveGray,
+        unratedColor: widget.unratedColor ?? Colors.inactiveGray,
       );
     } else if (index >= _rating - (widget.allowHalfRating ? 0.5 : 1.0) &&
         index < _rating &&
@@ -414,7 +413,7 @@ class _RatingBarState extends State<RatingBar> {
           child: widget.itemBuilder(context, index),
           enableMask: widget.ratingWidget == null,
           rtlMode: _isRTL,
-          unratedColor: widget.unratedColor ?? CupertinoColors.inactiveGray,
+          unratedColor: widget.unratedColor ?? Colors.inactiveGray,
         );
       } else {
         ratingWidget = SizedBox(

@@ -45,13 +45,13 @@ const List<BoxShadow> _kSliderBoxShadows = <BoxShadow> [
 class CupertinoThumbPainter {
   /// Creates an object that paints an iOS-style slider thumb.
   const CupertinoThumbPainter({
-    this.color = CupertinoColors.white,
+    this.color = Colors.white,
     this.shadows = _kSliderBoxShadows,
   }) : assert(shadows != null);
 
   /// Creates an object that paints an iOS-style switch thumb.
   const CupertinoThumbPainter.switchThumb({
-    Color color = CupertinoColors.white,
+    Color color = Colors.white,
     List<BoxShadow> shadows = _kSwitchBoxShadows,
   }) : this(color: color, shadows: shadows);
 

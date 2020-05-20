@@ -1,0 +1,35 @@
+name: itaperuna
+description: A new Flutter project.
+version: 3.0.0+11
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  busk:
+    path: "../../"
+  dio: ^3.0.9
+  hive: ^1.4.1+1
+  hive_flutter: ^0.3.0+2
+  hive_generator: ^0.7.0+2
+  cached_network_image: ^2.2.0+1
+  cupertino_icons: ^0.1.2
+  flutter_html: ^1.0.0-pre.1
+
+dev_dependencies:
+  flutter:
+    sdk: flutter
+  flutter_test:
+    sdk: flutter
+
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+   - assets/no-image.png
+  #  - images/a_dot_ham.jpeg

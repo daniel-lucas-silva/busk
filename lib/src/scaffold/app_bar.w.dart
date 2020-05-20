@@ -2,7 +2,6 @@ part of 'app_bar.dart';
 
 class AppBarBackButton extends StatelessWidget {
   const AppBarBackButton({
-    this.color,
     this.previousPageTitle,
     this.onPressed,
   })  : _backChevron = null,
@@ -12,10 +11,8 @@ class AppBarBackButton extends StatelessWidget {
     this._backChevron,
     this._backLabel,
   )   : previousPageTitle = null,
-        color = null,
         onPressed = null;
 
-  final Color color;
   final String previousPageTitle;
   final VoidCallback onPressed;
   final Widget _backChevron;
@@ -31,14 +28,12 @@ class AppBarBackButton extends StatelessWidget {
       );
     }
 
-    TextStyle actionTextStyle =
-        CupertinoTheme.of(context).textTheme.navActionTextStyle;
-    if (color != null) {
-      actionTextStyle = actionTextStyle.copyWith(
-          color: CupertinoDynamicColor.resolve(color, context));
-    }
+    TextStyle actionTextStyle = CupertinoTheme.of(context).textTheme.body.copyWith(
+      color: CupertinoTheme.of(context).primaryColor,
+    );
 
-    return CupertinoButton(
+
+    return Button(
       child: Semantics(
         container: true,
         excludeSemantics: true,
@@ -53,7 +48,7 @@ class AppBarBackButton extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                const Padding(padding: EdgeInsetsDirectional.only(start: 8.0)),
+                const Padding(padding: EdgeInsetsDirectional.only(start: 6.0)),
                 _backChevron ?? const _BackChevron(),
                 const Padding(padding: EdgeInsetsDirectional.only(start: 6.0)),
                 Flexible(
@@ -74,6 +69,45 @@ class AppBarBackButton extends StatelessWidget {
           onPressed();
         else
           Navigator.maybePop(context);
+      },
+    );
+  }
+}
+
+class AppBarButton extends StatelessWidget {
+  const AppBarButton({
+    this.child,
+    this.onPressed,
+  }) ;
+
+
+
+  final Widget child;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+
+    TextStyle actionTextStyle = CupertinoTheme.of(context).textTheme.body.copyWith(
+      color: CupertinoTheme.of(context).primaryColor,
+    );
+
+
+    return Button(
+      child: Semantics(
+        container: true,
+        excludeSemantics: true,
+        label: 'App Bar Button',
+        button: true,
+        child: DefaultTextStyle(
+          style: actionTextStyle,
+          child: child,
+        ),
+      ),
+      padding: EdgeInsets.zero,
+      onPressed: () {
+        if (onPressed != null)
+          onPressed();
       },
     );
   }

@@ -1,5 +1,7 @@
 part of 'cell.dart';
 
+
+
 enum _Slot {
   title,
   subtitle,
@@ -45,15 +47,23 @@ class _Cell extends RenderObjectWidget {
       isPressed: isPressed,
       hasBackground: hasBackground,
       hasDivider: hasDivider,
+      dividerThickness: kDividerThickness / MediaQuery.of(context).devicePixelRatio,
+      dividerColor: Colors.divider.resolveFrom(context),
+      backgroundColor: Colors.secondarySystemGroupedBackground.resolveFrom(context),
+      pressedColor: Colors.tertiarySystemGroupedBackground.resolveFrom(context),
     );
   }
 
   @override
   void updateRenderObject(BuildContext context, _RenderCell renderObject) {
     renderObject..type = type
-    ..isPressed = isPressed
-    ..hasBackground = hasBackground
-    ..hasDivider = hasDivider;
+      ..isPressed = isPressed
+      ..hasBackground = hasBackground
+      ..hasDivider = hasDivider
+      ..dividerThickness = kDividerThickness / MediaQuery.of(context).devicePixelRatio
+      ..dividerColor = Colors.divider.resolveFrom(context)
+      ..backgroundColor = Colors.secondarySystemGroupedBackground.resolveFrom(context)
+      ..pressedColor = Colors.tertiarySystemGroupedBackground.resolveFrom(context);
   }
 }
 
@@ -182,28 +192,72 @@ class _CellElement extends RenderObjectElement {
 
 class _RenderCell extends RenderBox {
   _RenderCell({
+    @required double dividerThickness,
     @required CellType type,
     @required bool hasBackground,
     @required bool hasDivider,
     @required bool isPressed,
+    @required Color dividerColor,
+    @required Color backgroundColor,
+    @required Color pressedColor,
   })  : assert(type != null),
         _type = type,
         _hasBackground = hasBackground,
         _hasDivider = hasDivider,
         _isPressed = isPressed,
+        _dividerThickness = dividerThickness,
         _buttonBackgroundPaint = Paint()
           ..style = PaintingStyle.fill
-          ..color = _kBackgroundColor,
+          ..color = backgroundColor,
         _pressedButtonBackgroundPaint = Paint()
           ..style = PaintingStyle.fill
-          ..color = _kPressedColor,
+          ..color = pressedColor,
         _dividerPaint = Paint()
-          ..color = _kDividerColor
+          ..color = dividerColor
           ..style = PaintingStyle.fill;
 
   final Paint _buttonBackgroundPaint;
   final Paint _pressedButtonBackgroundPaint;
   final Paint _dividerPaint;
+
+  double get dividerThickness => _dividerThickness;
+  double _dividerThickness;
+
+  set dividerThickness(double newValue) {
+    if (newValue == _dividerThickness) {
+      return;
+    }
+
+    _dividerThickness = newValue;
+    markNeedsLayout();
+  }
+
+  Color get backgroundColor => _buttonBackgroundPaint.color;
+  set backgroundColor(Color newValue) {
+    if (newValue == _buttonBackgroundPaint.color) {
+      return;
+    }
+    _buttonBackgroundPaint.color = newValue;
+    markNeedsPaint();
+  }
+
+  Color get pressedColor => _pressedButtonBackgroundPaint.color;
+  set pressedColor(Color newValue) {
+    if (newValue == _pressedButtonBackgroundPaint.color) {
+      return;
+    }
+    _pressedButtonBackgroundPaint.color = newValue;
+    markNeedsPaint();
+  }
+
+  Color get dividerColor => _dividerPaint.color;
+  set dividerColor(Color value) {
+    if (value == _dividerPaint.color) {
+      return;
+    }
+    _dividerPaint.color = value;
+    markNeedsPaint();
+  }
 
   static const double _kGap = 15.0;
   static const double _kDGap = 12.0;
@@ -394,13 +448,13 @@ class _RenderCell extends RenderBox {
   @override
   double computeMinIntrinsicHeight(double width) {
     return math.max(_minHeight(title, width), _minHeight(subtitle, width)) +
-        _maxHeight(text, width);
+        _maxHeight(text, width) + dividerThickness;
   }
 
   @override
   double computeMaxIntrinsicHeight(double width) {
     return math.max(_maxHeight(title, width), _maxHeight(subtitle, width)) +
-        _maxHeight(text, width);
+        _maxHeight(text, width) + dividerThickness;
   }
 
 //
@@ -483,8 +537,6 @@ class _RenderCell extends RenderBox {
   }
 
   void _drawButtonBackgroundsAndDividersStacked(Canvas canvas, Offset offset) {
-    final double dividerThickness = 1.0;
-
     final Path backgroundFillPath = Path()
       ..addRect(Rect.fromLTWH(0.0, 0.0, size.width, size.height));
 
@@ -497,16 +549,16 @@ class _RenderCell extends RenderBox {
 
     final Rect dividerRect = Rect.fromLTWH(
       accumulatingOffset.dx + 15.0,
-      size.height - 1,
+      size.height - dividerThickness,
       size.width - 15.0,
       dividerThickness,
     );
 
     final Rect buttonBackgroundRect = Rect.fromLTWH(
       accumulatingOffset.dx,
-      accumulatingOffset.dy - 1,
+      accumulatingOffset.dy - dividerThickness,
       size.width,
-      size.height + 2,
+      size.height + (dividerThickness * 2),
     );
 
     if (isPressed) {
@@ -597,7 +649,7 @@ class _RenderCell extends RenderBox {
     final titleSize = _layoutBox(title, textConstraints);
 
     final BoxConstraints afterConstraints =
-        looseConstraints.tighten(width: containerWidth - titleSize.width);
+    looseConstraints.tighten(width: containerWidth - titleSize.width);
 
     final Size afterSize = _layoutBox(after, afterConstraints);
 
@@ -989,7 +1041,7 @@ class _RenderCell extends RenderBox {
     final BoxConstraints looseConstraints = constraints.loosen();
 
     final BoxConstraints trailingConstraints =
-        looseConstraints.tighten(width: 90, height: 82);
+    looseConstraints.tighten(width: 90, height: 82);
 
     final double tileWidth = looseConstraints.maxWidth;
     final Size trailingSize = _layoutBox(trailing, trailingConstraints);
@@ -1003,7 +1055,7 @@ class _RenderCell extends RenderBox {
 
     final BoxConstraints headerConstraints = looseConstraints.tighten(
       width:
-          tileWidth - trailingWidth - afterWidth - contentGap - (_padding * 2),
+      tileWidth - trailingWidth - afterWidth - contentGap - (_padding * 2),
     );
     final BoxConstraints subtitleConstraints = looseConstraints.tighten(
       width: tileWidth -

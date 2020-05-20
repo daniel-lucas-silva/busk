@@ -97,13 +97,13 @@ class CupertinoSwitch extends StatefulWidget {
 
   /// The color to use when this switch is on.
   ///
-  /// Defaults to [CupertinoColors.systemGreen] when null and ignores
+  /// Defaults to [Colors.systemGreen] when null and ignores
   /// the [CupertinoTheme] in accordance to native iOS behavior.
   final Color activeColor;
 
   /// The color to use for the background when the switch is off.
   ///
-  /// Defaults to [CupertinoColors.secondarySystemFill] when null.
+  /// Defaults to [Colors.secondarySystemFill] when null.
   final Color trackColor;
 
   /// {@template flutter.cupertino.switch.dragStartBehavior}
@@ -146,11 +146,11 @@ class _CupertinoSwitchState extends State<CupertinoSwitch> with TickerProviderSt
       opacity: widget.onChanged == null ? _kCupertinoSwitchDisabledOpacity : 1.0,
       child: _CupertinoSwitchRenderObjectWidget(
         value: widget.value,
-        activeColor: CupertinoDynamicColor.resolve(
-          widget.activeColor ?? CupertinoColors.systemGreen,
+        activeColor: DynamicColor.resolve(
+          widget.activeColor ?? Colors.systemGreen,
           context,
         ),
-        trackColor: CupertinoDynamicColor.resolve(widget.trackColor ?? CupertinoColors.secondarySystemFill, context),
+        trackColor: DynamicColor.resolve(widget.trackColor ?? Colors.secondarySystemFill, context),
         onChanged: widget.onChanged,
         vsync: this,
         dragStartBehavior: widget.dragStartBehavior,

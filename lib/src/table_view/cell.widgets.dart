@@ -8,19 +8,19 @@ class ActionIcon extends StatelessWidget {
 }
 
 class IconSpan extends TextSpan {
-  IconSpan(IconData icon, {Color color, double size, bool bolder: false })
+  IconSpan(IconData icon, {Color color, double size, bool bolder: false})
       : super(
-    text: String.fromCharCode(icon.codePoint),
-    style: TextStyle(
-      inherit: false,
-      fontFamily: icon.fontFamily,
-      package: icon.fontPackage,
-      height: 1,
-      fontSize: size,
-      color: color,
-      fontWeight: bolder ? FontWeight.bold : FontWeight.normal,
-    ),
-  );
+          text: String.fromCharCode(icon.codePoint),
+          style: TextStyle(
+            inherit: false,
+            fontFamily: icon.fontFamily,
+            package: icon.fontPackage,
+            height: 1,
+            fontSize: size,
+            color: color,
+            fontWeight: bolder ? FontWeight.bold : FontWeight.normal,
+          ),
+        );
 }
 
 class LinkSpan extends StatefulWidget {
@@ -78,6 +78,8 @@ class _LinkSpanState extends State<LinkSpan> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = CupertinoTheme.of(context).textTheme;
+
     return AnimatedOpacity(
       opacity: opacity,
       duration: const Duration(milliseconds: 50),
@@ -89,7 +91,11 @@ class _LinkSpanState extends State<LinkSpan> {
         behavior: HitTestBehavior.opaque,
         child: Text(
           widget.title,
-          style: !widget.subheading ? _kTitleStyle : _kSubheadlineStyle.copyWith(color: _kPrimary),
+          style: !widget.subheading
+              ? textTheme.body
+              : textTheme.subhead.copyWith(
+                  color: CupertinoTheme.of(context).primaryColor,
+                ),
         ),
       ),
     );
