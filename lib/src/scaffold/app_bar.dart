@@ -73,7 +73,7 @@ Widget _wrapWithBackground({
   if (updateSystemUiOverlay) {
     final bool darkBackground = backgroundColor.computeLuminance() < 0.179;
     final Brightness brightness =
-    darkBackground ? Brightness.light : Brightness.dark;
+        darkBackground ? Brightness.light : Brightness.dark;
     result = AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
         statusBarColor: Color(0x00000000),
@@ -135,6 +135,7 @@ class SliverAppBar extends StatefulWidget {
     this.brightness,
     this.padding,
     this.transitionBetweenRoutes = true,
+    this.largeTransparent = false,
     this.heroTag = _defaultHeroTag,
   })  : assert(automaticallyImplyLeading != null),
         assert(automaticallyImplyTitle != null),
@@ -153,6 +154,7 @@ class SliverAppBar extends StatefulWidget {
   final EdgeInsetsDirectional padding;
   final Border border;
   final bool transitionBetweenRoutes;
+  final bool largeTransparent;
   final Object heroTag;
 
 //  bool get opaque => backgroundColor.alpha == 0xFF;
@@ -211,6 +213,7 @@ class _SliverAppBarState extends State<SliverAppBar> {
                 _kNavBarPersistentHeight + MediaQuery.of(context).padding.top,
             alwaysShowMiddle: widget.middle != null,
             isLarge: widget.largeTitle != null,
+            largeTransparent: widget.largeTransparent,
           ),
         ),
       ),
@@ -234,6 +237,7 @@ class _LargeTitleNavigationBarSliverDelegate
     @required this.persistentHeight,
     @required this.alwaysShowMiddle,
     @required this.isLarge: false,
+    @required this.largeTransparent: false,
   })  : assert(persistentHeight != null),
         assert(alwaysShowMiddle != null),
         assert(transitionBetweenRoutes != null);
@@ -251,6 +255,7 @@ class _LargeTitleNavigationBarSliverDelegate
   final double persistentHeight;
   final bool alwaysShowMiddle;
   final bool isLarge;
+  final bool largeTransparent;
 
   @override
   double get minExtent => persistentHeight;
@@ -263,7 +268,17 @@ class _LargeTitleNavigationBarSliverDelegate
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    double percent() {
+      final max = maxExtent - minExtent;
+      final size = math.min(shrinkOffset, maxExtent - minExtent);
+
+      return _map(size, 0, max, 0.0, 1.0);
+    }
+
     final bool showLargeTitle =
         shrinkOffset < maxExtent - minExtent - _kNavBarShowLargeTitleThreshold;
 
@@ -279,7 +294,7 @@ class _LargeTitleNavigationBarSliverDelegate
 
     final Widget navBar = _wrapWithBackground(
       border: border,
-      backgroundColor: bgColor,
+      backgroundColor: bgColor.withOpacity(!largeTransparent ? 1 : percent()),
       brightness: brightness,
       child: DefaultTextStyle(
         style: CupertinoTheme.of(context).textTheme.textStyle,
@@ -859,4 +874,14 @@ class _NavigationBarTransition extends StatelessWidget {
       ),
     );
   }
+}
+
+double _norm(double value, double min, double max) =>
+    (value - min) / (max - min);
+
+double _lerp(double norm, num min, num max) => (max - min) * norm + min;
+
+double _map(double value, double sourceMin, double sourceMax, double destMin,
+    double destMax) {
+  return _lerp(_norm(value, sourceMin, sourceMax), destMin, destMax);
 }
